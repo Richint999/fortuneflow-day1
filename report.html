@@ -39,13 +39,40 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('i_download').textContent=t.download;
   document.getElementById('i_backhome').textContent=t.backhome;
   const data = JSON.parse(localStorage.getItem('ff_result')||'null');
-  if(!data){ document.getElementById('r-pillars').textContent="(No data. Go to Home and calculate first.)"; return; }
+  if(!data){ document.getElementById('r-pillars').textContent = t.pillars + ': ' + '(calculado en Inicio / 已在首页计算)'; return; }
   const c = data.counts;
   const pretty = Object.keys(data.counts).reduce((acc,k)=>{ acc[t.elem_names[k]] = data.counts[k]; return acc; }, {});
-document.getElementById('r-elements').textContent = t.elements + ": " + JSON.stringify(pretty);
+renderReportTable(data.counts, t);
 const luckyNames = (data.lucky||[]).map(c=>t.color_names[c]);
+const luckyNames=(data.lucky||[]).map(c=>t.color_names[c]);
 document.getElementById('r-lucky').textContent = t.lucky + ": " + (luckyNames.join(", ")||"—");
-  document.getElementById('r-lucky').textContent = t.lucky + ": " + (data.lucky.join(", ")||"—");
-  document.getElementById('r-pillars').textContent = t.pillars + ": (calculated on Home)";
+  const luckyNames=(data.lucky||[]).map(c=>t.color_names[c]);
+document.getElementById('r-lucky').textContent = t.lucky + ": " + (luckyNames.join(", ")||"—");
+  document.getElementById('r-pillars').textContent = t.pillars + ': ' + '(calculado en Inicio / 已在首页计算)';
 });
+
+function renderReportTable(counts, t){
+  const table = document.createElement('table');
+  table.style.width='100%'; table.style.borderCollapse='collapse'; table.style.marginTop='8px';
+  const thead = document.createElement('thead');
+  thead.innerHTML = `<tr>
+    <th style="text-align:left;border-bottom:1px solid #2a3d63;padding:6px 8px">${t.elements}</th>
+    <th style="text-align:right;border-bottom:1px solid #2a3d63;padding:6px 8px">#</th>
+  </tr>`;
+  table.appendChild(thead);
+  const tbody = document.createElement('tbody');
+  const keys=['Wood','Fire','Earth','Metal','Water'];
+  keys.forEach(k=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML = `<td style="padding:6px 8px;border-bottom:1px dashed #2a3d63">${t.elem_names[k]}</td>
+                    <td style="padding:6px 8px;text-align:right;border-bottom:1px dashed #2a3d63">${counts[k]||0}</td>`;
+    tbody.appendChild(tr);
+  });
+  table.appendChild(tbody);
+  const host = document.getElementById('r-elements');
+  if(host){
+    host.innerHTML = ""; host.appendChild(table);
+  }
+}
+
 </script></body></html>
