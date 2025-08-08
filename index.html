@@ -33,7 +33,7 @@
   </section>
 
   <section class="card">
-    <h2>BaZi → Five Elements (Demo)</h2>
+    <h2 id='i_demo_title'>BaZi → Five Elements (Demo)</h2>
     <div class="grid cols-2">
       <div>
         <div class="grid cols-2">
@@ -48,11 +48,11 @@
         </div>
         <div style="margin-top:10px">
           <button id="calc-btn">Calculate</button>
-          <a class="button" href="report.html">Open Report</a>
+          <a class="button" href="report.html" id="open-report">Open Report</a>
         </div>
       </div>
       <div>
-        <pre id="result-json" class="mono" style="min-height:140px;background:#0b1020;border:1px solid #203052;border-radius:10px;padding:10px"></pre>
+        <div id="result-json" class="mono" style="min-height:140px;background:#0b1020;border:1px solid #203052;border-radius:10px;padding:10px"></div>
         <div id="advice" style="margin-top:10px"></div>
         <div id="five-bars"></div>
       </div>
@@ -89,15 +89,53 @@ function buildSelect(options,id){const sel=document.getElementById(id);sel.inner
 function tally(si,bi){const c={Wood:0,Fire:0,Earth:0,Metal:0,Water:0};c[STEMS_DATA[si].e]+=1;BRANCHES_DATA[bi].e.forEach(e=>c[e]+=1);return c;}
 function totalCounts(arr){const t={Wood:0,Fire:0,Earth:0,Metal:0,Water:0};arr.forEach(c=>ELEMENTS.forEach(e=>t[e]+=c[e]));return t;}
 function luckyBy(e){const map={Wood:["green","cyan"],Fire:["red","orange"],Earth:["yellow","brown"],Metal:["white","silver","gold"],Water:["black","blue","navy"]};return map[e]||[];}
-function renderBars(counts){const c=document.getElementById('five-bars');if(!c)return;c.innerHTML='';ELEMENTS.forEach(e=>{const bar=document.createElement('div');bar.className='bar';const v=counts[e];bar.style.height=(10+v*22)+'px';const label=document.createElement('span');label.textContent=`${e} ${v}`;bar.appendChild(label);c.appendChild(bar);});}
+function renderBars(counts){
+  const c=document.getElementById('five-bars'); if(!c) return;
+  c.innerHTML='';
+  const t=(I18N[detectLang()]||I18N.en);
+  ELEMENT_KEYS.forEach(key=>{
+    const bar=document.createElement('div'); bar.className='bar';
+    const v=counts[key]||0; bar.style.height=(10+v*22)+'px';
+    const label=document.createElement('span'); label.textContent=`${t.elem_names[key]} 
+
+function renderResultTable(counts){
+  const t=(I18N[detectLang()]||I18N.en);
+  const table = document.createElement('table');
+  table.style.width='100%'; table.style.borderCollapse='collapse'; table.style.marginTop='8px';
+  const thead = document.createElement('thead');
+  thead.innerHTML = `<tr>
+    <th style="text-align:left;border-bottom:1px solid #2a3d63;padding:6px 8px">${t.elements}</th>
+    <th style="text-align:right;border-bottom:1px solid #2a3d63;padding:6px 8px">#</th>
+  </tr>`;
+  table.appendChild(thead);
+  const tbody = document.createElement('tbody');
+  const keys=['Wood','Fire','Earth','Metal','Water'];
+  keys.forEach(k=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML = `<td style="padding:6px 8px;border-bottom:1px dashed #2a3d63">${t.elem_names[k]}</td>
+                    <td style="padding:6px 8px;text-align:right;border-bottom:1px dashed #2a3d63">${counts[k]||0}</td>`;
+    tbody.appendChild(tr);
+  });
+  table.appendChild(tbody);
+  const host = document.getElementById('result-json');
+  if(host){
+    host.replaceWith(table);
+    table.id = 'result-table';
+  }
+}
+
+${v}`;
+    bar.appendChild(label); c.appendChild(bar);
+  });
+} ${v}`;bar.appendChild(label);c.appendChild(bar);});}
 function calcAndShow(){const ids=['year','month','day','hour'];const arr=ids.map(p=>{const s=parseInt(document.getElementById(p+'-stem').value,10);const b=parseInt(document.getElementById(p+'-branch').value,10);return tally(s,b);});const t=totalCounts(arr);renderBars(t);const order=Object.entries(t).sort((a,b)=>b[1]-a[1]);const most=order[0][0],least=order[4][0];const lucky=luckyBy(least);localStorage.setItem('ff_result',JSON.stringify({counts:t,most,least,lucky}));const adv=document.getElementById('advice');if(adv){const tt=I18N[detectLang()]||I18N.en;adv.innerHTML=`<b>${tt.strongest}:</b> ${most}<br/><b>${tt.weakest}:</b> ${least}<br/><b>${tt.lucky}:</b> ${lucky.join(", ")||"—"}`;}
 }
 </script><script>
 document.addEventListener('DOMContentLoaded',function(){
   ['year','month','day','hour'].forEach(p=>{buildSelect(STEMS_DATA,p+'-stem');buildSelect(BRANCHES_DATA,p+'-branch');});
   document.getElementById('calc-btn')?.addEventListener('click',calcAndShow);
-  populateCountrySelect('ff-country');
-  function sync(){const idx=parseInt(document.getElementById('ff-country').value||'0',10);const d=(document.getElementById('ff-date').value||'');document.getElementById('ff-offset').value=String(inferOffset(idx,d));}
+  safePopulateCountry();
+  function sync(){ safeInferOffset(); }
   document.getElementById('ff-country').addEventListener('change',sync);
   document.getElementById('ff-date').addEventListener('change',sync); sync();
   document.getElementById('ff-autofill').addEventListener('click',function(){

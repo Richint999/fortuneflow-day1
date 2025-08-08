@@ -41,7 +41,10 @@ document.addEventListener('DOMContentLoaded',()=>{
   const data = JSON.parse(localStorage.getItem('ff_result')||'null');
   if(!data){ document.getElementById('r-pillars').textContent="(No data. Go to Home and calculate first.)"; return; }
   const c = data.counts;
-  document.getElementById('r-elements').textContent = t.elements + ": " + JSON.stringify(c);
+  const pretty = Object.keys(data.counts).reduce((acc,k)=>{ acc[t.elem_names[k]] = data.counts[k]; return acc; }, {});
+document.getElementById('r-elements').textContent = t.elements + ": " + JSON.stringify(pretty);
+const luckyNames = (data.lucky||[]).map(c=>t.color_names[c]);
+document.getElementById('r-lucky').textContent = t.lucky + ": " + (luckyNames.join(", ")||"—");
   document.getElementById('r-lucky').textContent = t.lucky + ": " + (data.lucky.join(", ")||"—");
   document.getElementById('r-pillars').textContent = t.pillars + ": (calculated on Home)";
 });
