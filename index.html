@@ -186,8 +186,8 @@ document.addEventListener("DOMContentLoaded", function(){
 <script src="assets/js/fortune.js" defer></script>
 
 
-<script src="assets/js/geo.js" defer type="module"></script>
-<script type="module">
+
+<script >
 import { populateCountrySelect, inferOffsetFromCountryAndDate } from "./assets/js/geo.js";
 document.addEventListener("DOMContentLoaded", function(){
   const country = document.getElementById("d2-country");
@@ -204,6 +204,30 @@ document.addEventListener("DOMContentLoaded", function(){
   dateInp && dateInp.addEventListener("change", syncOffset);
   // Initial fill
   setTimeout(syncOffset, 0);
+});
+</script>
+
+
+<script src="assets/js/geo.js" defer></script>
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+  var country = document.getElementById("d2-country");
+  var dateInp = document.getElementById("d2-date");
+  var off = document.getElementById("d2-off");
+  function syncOffset(){
+    try{
+      var idx = parseInt((country && country.value) || "0", 10);
+      var dateStr = (dateInp && dateInp.value) || "";
+      var minutes = window.__FF_COUNTRY__.inferOffsetFromCountryAndDate(idx, dateStr);
+      if (off && !isNaN(minutes)) off.value = String(minutes);
+    }catch(e){ console.warn("UTC auto-fill error", e); }
+  }
+  if (window.__FF_COUNTRY__){
+    window.__FF_COUNTRY__.populateCountrySelect("d2-country");
+    country && country.addEventListener("change", syncOffset);
+    dateInp && dateInp.addEventListener("change", syncOffset);
+    setTimeout(syncOffset, 0);
+  }
 });
 </script>
 
