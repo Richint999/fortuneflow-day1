@@ -33,7 +33,7 @@
   </section>
 
   <section class="card">
-    <h2 id='i_demo_title'>BaZi → Five Elements (Demo)</h2>
+    <h2>BaZi → Five Elements (Demo)</h2>
     <div class="grid cols-2">
       <div>
         <div class="grid cols-2">
@@ -48,7 +48,7 @@
         </div>
         <div style="margin-top:10px">
           <button id="calc-btn">Calculate</button>
-          <a class="button" href="report.html" id="open-report">Open Report</a>
+          <a class="button" href="report.html">Open Report</a>
         </div>
       </div>
       <div>
@@ -89,17 +89,7 @@ function buildSelect(options,id){const sel=document.getElementById(id);sel.inner
 function tally(si,bi){const c={Wood:0,Fire:0,Earth:0,Metal:0,Water:0};c[STEMS_DATA[si].e]+=1;BRANCHES_DATA[bi].e.forEach(e=>c[e]+=1);return c;}
 function totalCounts(arr){const t={Wood:0,Fire:0,Earth:0,Metal:0,Water:0};arr.forEach(c=>ELEMENTS.forEach(e=>t[e]+=c[e]));return t;}
 function luckyBy(e){const map={Wood:["green","cyan"],Fire:["red","orange"],Earth:["yellow","brown"],Metal:["white","silver","gold"],Water:["black","blue","navy"]};return map[e]||[];}
-function renderBars(counts){
-  const c=document.getElementById('five-bars'); if(!c) return;
-  c.innerHTML='';
-  const t=(I18N[detectLang()]||I18N.en);
-  ELEMENT_KEYS.forEach(key=>{
-    const bar=document.createElement('div'); bar.className='bar';
-    const v=counts[key]||0; bar.style.height=(10+v*22)+'px';
-    const label=document.createElement('span'); label.textContent=`${t.elem_names[key]} ${v}`;
-    bar.appendChild(label); c.appendChild(bar);
-  });
-} ${v}`;bar.appendChild(label);c.appendChild(bar);});}
+function renderBars(counts){const c=document.getElementById('five-bars');if(!c)return;c.innerHTML='';ELEMENTS.forEach(e=>{const bar=document.createElement('div');bar.className='bar';const v=counts[e];bar.style.height=(10+v*22)+'px';const label=document.createElement('span');label.textContent=`${e} ${v}`;bar.appendChild(label);c.appendChild(bar);});}
 function calcAndShow(){const ids=['year','month','day','hour'];const arr=ids.map(p=>{const s=parseInt(document.getElementById(p+'-stem').value,10);const b=parseInt(document.getElementById(p+'-branch').value,10);return tally(s,b);});const t=totalCounts(arr);renderBars(t);const order=Object.entries(t).sort((a,b)=>b[1]-a[1]);const most=order[0][0],least=order[4][0];const lucky=luckyBy(least);localStorage.setItem('ff_result',JSON.stringify({counts:t,most,least,lucky}));const adv=document.getElementById('advice');if(adv){const tt=I18N[detectLang()]||I18N.en;adv.innerHTML=`<b>${tt.strongest}:</b> ${most}<br/><b>${tt.weakest}:</b> ${least}<br/><b>${tt.lucky}:</b> ${lucky.join(", ")||"—"}`;}
 }
 </script><script>
