@@ -87,8 +87,8 @@ document.addEventListener("DOMContentLoaded", function(){
 <!-- Day-2: Auto Four Pillars (approx) -->
 <section class="fortune-panel" style="max-width:980px;margin:40px auto;padding:24px;border:1px solid #e5e7eb;border-radius:12px">
   <h2 style="margin:0 0 12px">Auto Four Pillars (Day-2)</h2>
-  <p style="margin:0 0 8px">Enter birth date, time, and UTC offset (e.g., Los Angeles in summer is UTC-7 → enter -420).</p>
-  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+  <p style="margin:0 0 8px">Select your country, then enter date/time. We will auto-fill UTC offset for you (approx for DST).</p>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><label>Country</label><select id="d2-country"></select>
     <label>Date</label><input id="d2-date" type="date">
     <label>Time</label><input id="d2-time" type="time" value="12:00">
     <label>UTC offset (minutes)</label><input id="d2-off" type="number" value="-480" style="width:120px">
@@ -184,5 +184,27 @@ document.addEventListener("DOMContentLoaded", function(){
   </div>
 </section>
 <script src="assets/js/fortune.js" defer></script>
+
+
+<script src="assets/js/geo.js" defer type="module"></script>
+<script type="module">
+import { populateCountrySelect, inferOffsetFromCountryAndDate } from "./assets/js/geo.js";
+document.addEventListener("DOMContentLoaded", function(){
+  const country = document.getElementById("d2-country");
+  const dateInp = document.getElementById("d2-date");
+  const off = document.getElementById("d2-off");
+  populateCountrySelect("d2-country");
+  function syncOffset(){ 
+    const idx = parseInt(country.value || "0", 10);
+    const dateStr = dateInp.value || "";
+    const minutes = inferOffsetFromCountryAndDate(idx, dateStr);
+    if (!isNaN(minutes)) off.value = String(minutes);
+  }
+  country && country.addEventListener("change", syncOffset);
+  dateInp && dateInp.addEventListener("change", syncOffset);
+  // Initial fill
+  setTimeout(syncOffset, 0);
+});
+</script>
 
 </body></html>

@@ -130,7 +130,34 @@ function elementsFromPillars(pillars){
   return counts;
 }
 
-function autoFourPillarsFromInput(dateStr, timeStr, utcOffsetMinutes){
+
+// --- Day-2.1 Hotfix additions ---
+function parseOffsetMinutes(raw){
+  if (raw == null) return 0;
+  const s = String(raw).trim();
+  if (s === "") return 0;
+  // "+08:00" or "-07:00"
+  const m = s.match(/^([+-]?)(\d{1,2})(?::?(\d{2}))?$/);
+  if (m){
+    const sign = m[1] === "-" ? -1 : 1;
+    const hh = parseInt(m[2]||"0",10);
+    const mm = parseInt(m[3]||"0",10);
+    // If looks like hours (<=24), convert to minutes; else assume minutes
+    if (hh <= 24 && (m[3] || s.includes(":") || Math.abs(hh) <= 24)){
+      return sign * (hh*60 + mm);
+    }
+  }
+  // plain number: treat |n| <= 24 as hours, else as minutes
+  const n = Number(s);
+  if (!isNaN(n)){
+    if (Math.abs(n) <= 24) return Math.round(n*60);
+    return Math.round(n);
+  }
+  throw new Error("Invalid UTC offset format");
+}
+
+
+function autoFourPillarsFromInput(dateStr, timeStr, utcOffsetMinutesRawRaw){
   if(!dateStr) throw new Error("Missing date");
   const [y,m,d] = dateStr.split("-").map(x=>parseInt(x,10));
   let hr=12, min=0;
@@ -142,7 +169,7 @@ function autoFourPillarsFromInput(dateStr, timeStr, utcOffsetMinutes){
   // Construct UTC date from local time and offset
   // local time = UTC + offset => UTC = local - offset
   const local = new Date(Date.UTC(y, (m-1), d, hr, min));
-  const utcMillis = local.getTime() - utcOffsetMinutes*60*1000;
+  const utcMillis = local.getTime() - utcOffsetMinutesRaw*60*1000;
   const utcDate = new Date(utcMillis);
 
   // Year pillar
@@ -156,10 +183,13 @@ function autoFourPillarsFromInput(dateStr, timeStr, utcOffsetMinutes){
   const [dStem, dBranch] = sexagenaryDay(utcDate.getUTCFullYear(), utcDate.getUTCMonth()+1, utcDate.getUTCDate());
 
   // Hour pillar
-  const hb = hourBranchIndex(local.getUTCHours ? local.getUTCHours() : utcDate.getUTCHours()); // using local's UTC hours not available; fallback to utcDate hours
-  const hBranch = hb;
+  const hBranch = hourBranchIndex(hr);
   const hStem = hourStemIndex(dStem, hBranch);
 
+  // DEBUG
+  console.log({input:{y,m,d,hr,min,utcOffsetMinutes},
+               pillars_preview:{yStem,yBranch},
+               utcDate: utcDate.toISOString()});
   return {
     year:{stemIdx:yStem, branchIdx:yBranch},
     month:{stemIdx:mStem, branchIdx:mBranch},
