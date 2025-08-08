@@ -4,6 +4,16 @@
 <title>FortuneFlow — BaZi & Five Elements</title>
 <link rel="stylesheet" href="styles.css">
 </head><body>
+<!-- Language Switcher -->
+<div style="position:sticky;top:0;z-index:50;background:rgba(255,255,255,0.9);backdrop-filter:saturate(180%) blur(6px);padding:8px 12px;display:flex;justify-content:flex-end;gap:8px;border-bottom:1px solid #eee">
+  <label for="ff-lang-menu" style="margin-right:6px">🌐</label>
+  <select id="ff-lang-menu" style="padding:6px 10px;border-radius:8px;border:1px solid #ddd">
+    <option value="zh">中文</option>
+    <option value="en">English</option>
+    <option value="es">Español</option>
+  </select>
+</div>
+>
 
 <div class="container">
   <div class="nav">
@@ -68,9 +78,9 @@
   <h2 style="margin:0 0 12px">Auto Four Pillars</h2>
   <p style="margin:0 10px 12px 0">Select country, date, time. We'll fill the four pillars for you. Then results will be calculated automatically.</p>
   <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-    <label>Country</label><select id="ff-country"></select>
-    <label>Date</label><input id="ff-date" type="date">
-    <label>Time</label><input id="ff-time" type="time" value="12:00">
+    <label for="ff-country">Country</label><select id="ff-country"></select>
+    <label for="ff-date">Date</label><input id="ff-date" type="date">
+    <label for="ff-time">Time</label><input id="ff-time" type="time" value="12:00">
     <input id="ff-offset" type="hidden" value="0">
     <button id="ff-autofill" style="padding:8px 12px;border:0;background:#0f172a;color:#fff;border-radius:8px;cursor:pointer">Auto-Fill</button>
   </div>
@@ -202,7 +212,7 @@ document.addEventListener("DOMContentLoaded", function(){
     var timeStr = (document.getElementById("ff-time").value||"").trim();
     var offStr  = (document.getElementById("ff-offset").value||"0").trim();
     if (!dateStr){
-      err.textContent = "Please select your birth date."; err.style.display="block"; return;
+      err.textContent = ""; err.style.display="block"; return;
     }
     try{
       var pillars = autoFourPillarsFromInput(dateStr, timeStr, offStr);
@@ -233,6 +243,19 @@ document.addEventListener("DOMContentLoaded", function(){
       console.error("Auto-Fill error:", e);
     }
   });
+});
+</script>
+
+
+<script src="assets/js/i18n.js" defer></script>
+<script>
+// Override error text with i18n value
+document.addEventListener("DOMContentLoaded", function(){
+  var err = document.getElementById("ff-error");
+  if (err && !err.textContent){
+    var t = err.getAttribute("data-i18n-error");
+    if (t) err.textContent = t;
+  }
 });
 </script>
 
