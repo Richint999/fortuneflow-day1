@@ -122,3 +122,38 @@ function initFortune(){
 }
 
 document.addEventListener("DOMContentLoaded", initFortune);
+
+
+// --- Easy Mode: auto-fill Year Stem/Branch from Gregorian date (approx via Feb 4 LiChun rule) ---
+function lichunAdjustedYear(date){
+  // If date is before Feb 4 of that year, treat as previous lunar-solar year for pillars.
+  const y = date.getFullYear();
+  const m = date.getMonth(); // 0-11
+  const d = date.getDate();
+  if (m < 1) return y - 1;         // Jan
+  if (m === 1 && d < 4) return y - 1; // before Feb 4
+  return y;
+}
+function sexagenaryYearIndex(year){
+  // Return [stemIdx, branchIdx] using (year - 4) offsets (JiaZi year = 1984, but this works generally)
+  const stemIdx = ((year - 4) % 10 + 10) % 10;
+  const branchIdx = ((year - 4) % 12 + 12) % 12;
+  return [stemIdx, branchIdx];
+}
+function autofillYearFromDateStr(dateStr){
+  if(!dateStr) return;
+  const dt = new Date(dateStr + "T12:00:00"); // noon to avoid TZ surprises
+  const adjYear = lichunAdjustedYear(dt);
+  const [stemIdx, branchIdx] = sexagenaryYearIndex(adjYear);
+  const ys = document.getElementById("year-stem");
+  const yb = document.getElementById("year-branch");
+  if(ys && yb){
+    ys.value = String(stemIdx);
+    yb.value = String(branchIdx);
+  }
+  // Optional: hint
+  const hint = document.getElementById("easy-hint");
+  if(hint){
+    hint.textContent = `Auto-filled Year Pillar for ${adjYear} (approx. LiChun on Feb 4).`;
+  }
+}
