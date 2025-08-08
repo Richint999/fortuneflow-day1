@@ -58,4 +58,53 @@
   <div>© 2025 FortuneFlow · Privacy-first · Bilingual (EN/中文)</div>
 </div>
 
+
+<!-- Day-1 Interactive Demo Panel (append) -->
+<section class="fortune-panel" style="max-width:980px;margin:40px auto;padding:24px;border:1px solid #eee;border-radius:12px">
+  <h2 style="margin:0 0 12px">BaZi → Five Elements (Day-1 Demo)</h2>
+  <p style="margin:0 0 16px">Select your four pillars (Gan-Zhi). Day-2 will auto-convert from Gregorian date/time.</p>
+  <div class="grid" style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px">
+    <!-- Year -->
+    <div>
+      <label>Year Stem</label>
+      <select id="year-stem"></select>
+      <label>Year Branch</label>
+      <select id="year-branch"></select>
+    </div>
+    <!-- Month -->
+    <div>
+      <label>Month Stem</label>
+      <select id="month-stem"></select>
+      <label>Month Branch</label>
+      <select id="month-branch"></select>
+    </div>
+    <!-- Day -->
+    <div>
+      <label>Day Stem</label>
+      <select id="day-stem"></select>
+      <label>Day Branch</label>
+      <select id="day-branch"></select>
+    </div>
+    <!-- Hour -->
+    <div>
+      <label>Hour Stem</label>
+      <select id="hour-stem"></select>
+      <label>Hour Branch</label>
+      <select id="hour-branch"></select>
+    </div>
+  </div>
+  <button id="calc-btn" style="margin-top:16px;padding:10px 16px;border:0;background:#0f172a;color:#fff;border-radius:8px;cursor:pointer">Calculate</button>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px">
+    <pre id="result-json" style="background:#0b1020;color:#e6e6e6;padding:12px;border-radius:10px;overflow:auto;min-height:120px"></pre>
+    <div>
+      <div id="advice" style="padding:12px;border:1px dashed #ddd;border-radius:10px;min-height:120px"></div>
+      <div id="five-bars" style="display:flex;align-items:flex-end;gap:10px;height:120px;margin-top:10px">
+        <!-- bars injected here -->
+      </div>
+    </div>
+  </div>
+</section>
+<script src="assets/js/fortune.js" defer></script>
+
 </body></html>
