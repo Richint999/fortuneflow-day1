@@ -83,6 +83,60 @@ document.addEventListener("DOMContentLoaded", function(){
 });
 </script>
 
+
+<!-- Day-2: Auto Four Pillars (approx) -->
+<section class="fortune-panel" style="max-width:980px;margin:40px auto;padding:24px;border:1px solid #e5e7eb;border-radius:12px">
+  <h2 style="margin:0 0 12px">Auto Four Pillars (Day-2)</h2>
+  <p style="margin:0 0 8px">Enter birth date, time, and UTC offset (e.g., Los Angeles in summer is UTC-7 → enter -420).</p>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+    <label>Date</label><input id="d2-date" type="date">
+    <label>Time</label><input id="d2-time" type="time" value="12:00">
+    <label>UTC offset (minutes)</label><input id="d2-off" type="number" value="-480" style="width:120px">
+    <button id="d2-btn" style="padding:8px 12px;border:0;background:#0f172a;color:#fff;border-radius:8px;cursor:pointer">Auto-fill All</button>
+    <span id="d2-hint" style="color:#475569"></span>
+  </div>
+  <div id="d2-out" style="margin-top:12px;font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;"></div>
+</section>
+<script src="assets/js/bazi.js" defer></script>
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+  const btn = document.getElementById("d2-btn");
+  const out = document.getElementById("d2-out");
+  const hint = document.getElementById("d2-hint");
+  btn && btn.addEventListener("click", function(){
+    const dateStr = (document.getElementById("d2-date").value||"").trim();
+    const timeStr = (document.getElementById("d2-time").value||"").trim();
+    const off = parseInt((document.getElementById("d2-off").value||"0"),10);
+    try{
+      const pillars = autoFourPillarsFromInput(dateStr, timeStr, off);
+      // Fill selects if exist
+      const mp = {year:"year", month:"month", day:"day", hour:"hour"};
+      Object.keys(mp).forEach(k=>{
+        const s = document.getElementById(`${mp[k]}-stem`);
+        const b = document.getElementById(`${mp[k]}-branch`);
+        if(s && b){
+          s.value = String(pillars[k].stemIdx);
+          b.value = String(pillars[k].branchIdx);
+        }
+      });
+      hint.textContent = "Auto-filled. You can now click Calculate.";
+      // Show readable
+      const S = pillars.meta.stemsZh;
+      const B = pillars.meta.branchesZh;
+      const fmt = (p)=> `${S[p.stemIdx]}${B[p.branchIdx]}`;
+      out.innerHTML = `
+        <div>Year: ${fmt(pillars.year)} (${pillars.meta.yAdj})</div>
+        <div>Month: ${fmt(pillars.month)}</div>
+        <div>Day: ${fmt(pillars.day)}</div>
+        <div>Hour: ${fmt(pillars.hour)}</div>
+      `;
+    }catch(e){
+      hint.textContent = e.message || "Invalid input";
+    }
+  });
+});
+</script>
+
 <!-- Day-1 Interactive Demo Panel (append) -->
 <section class="fortune-panel" style="max-width:980px;margin:40px auto;padding:24px;border:1px solid #eee;border-radius:12px">
   <h2 style="margin:0 0 12px">BaZi → Five Elements (Day-1 Demo)</h2>
