@@ -1,37 +1,55 @@
-
-<!doctype html><html><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Checkout — FortuneFlow</title>
-<link rel="stylesheet" href="styles.css">
-</head><body>
-
-<div class="container">
-  <div class="nav">
-    <div class="logo">FortuneFlow</div>
-    <div>
-      <a href="/sandbox:/mnt/data/fortuneflow-day1/index.html">Home</a>
-      <a href="/sandbox:/mnt/data/fortuneflow-day1/calc.html">Calculate</a>
-      <a href="/sandbox:/mnt/data/fortuneflow-day1/pricing.html">Pricing</a>
-      <a href="/sandbox:/mnt/data/fortuneflow-day1/account.html">Account</a>
-      <a class="btn secondary" href="/sandbox:/mnt/data/fortuneflow-day1/checkout.html">Checkout</a>
-    </div>
+<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'><title>Checkout</title><link rel='stylesheet' href='styles.css'></head><body><div class="topbar no-print">
+  <div class="container row">
+    <div class="brand">FortuneFlow</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="account.html">Account</a>
+      <a href="report.html">Report</a>
+      <label>🌐</label>
+      <select id="lang" style="padding:6px 10px;border-radius:8px;border:1px solid #2a3d63">
+        <option value="zh">中文</option>
+        <option value="en" selected>English</option>
+        <option value="es">Español</option>
+      </select>
+    </nav>
   </div>
-</div>
-
-<div class="container">
-  <h1>Checkout (Demo)</h1>
-  <p class="small">Stripe will be integrated on Day 3. This is a static preview.</p>
-  <div class="form-row">
-    <div><label class="label">Plan</label>
-      <select class="input"><option>Starter — $9</option><option>Plus — $29</option><option>VIP — $79</option></select>
-    </div>
-    <div><label class="label">Email</label><input class="input" placeholder="you@example.com"></div>
-  </div>
-  <p><a class="btn" href="/sandbox:/mnt/data/fortuneflow-day1/account.html">Mock Pay → Go to Account</a></p>
-</div>
-
-<div class="container footer">
-  <div>© 2025 FortuneFlow · Privacy-first · Bilingual (EN/中文)</div>
-</div>
-
-</body></html>
+</div><div class="container"><h1 id="title-text">Checkout</h1>
+<section class="card">
+<form id="form" class="grid cols-2" onsubmit="return false;">
+  <div><label id="i_name">Full Name</label><br><input id="name" type="text" required></div>
+  <div><label id="i_email">Email</label><br><input id="email" type="email" required></div>
+  <div><label>Plan</label><br><input id="plan" type="text" readonly></div>
+  <div><label>Notes</label><br><input id="notes" type="text" placeholder="Anything else?"></div>
+  <div><button id="submit-btn">Submit</button></div>
+</form>
+<div id="thanks" class="badge" style="display:none;margin-top:12px"></div>
+</section></div><script>
+const I18N={en:{title:"FortuneFlow — BaZi & Five Elements",auto_four:"Auto Four Pillars",tip:"Select country, date, time. We'll fill the four pillars for you. Then results will be calculated automatically.",country:"Country",birth_date:"Birth Date",birth_time:"Birth Time",tst:"True Solar Time",lon:"Longitude°",autofill:"Auto-Fill",err_date:"Please select your birth date.",tst_show:"True Solar Time",pricing:"Pricing",basic:"Basic",pro:"Pro",vip:"VIP",buy:"Buy Now",month:"/month",features:"Features",includes:"Includes",checkout:"Checkout",name:"Full Name",email:"Email",submit:"Submit",thanks:"Thank you! We'll contact you shortly.",report:"Report",download:"Download / Print",backhome:"Back to Home",pillars:"Pillars",elements:"Five Elements",lucky:"Lucky Colors",strongest:"Strongest",weakest:"Weakest"},
+zh:{title:"FortuneFlow — 八字与五行",auto_four:"自动排四柱",tip:"选择国家、出生日期和时间，我们会自动计算四柱，并输出结果。",country:"国家",birth_date:"出生日期",birth_time:"出生时间",tst:"真太阳时",lon:"经度°",autofill:"一键生成",err_date:"请先选择出生日期。",tst_show:"真太阳时",pricing:"价格",basic:"基础版",pro:"专业版",vip:"旗舰版",buy:"立即购买",month:"/月",features:"功能",includes:"包含",checkout:"结账",name:"姓名",email:"邮箱",submit:"提交",thanks:"感谢！我们会尽快联系你。",report:"报告",download:"下载/打印",backhome:"返回首页",pillars:"四柱",elements:"五行",lucky:"幸运色",strongest:"最旺",weakest:"最弱"},
+es:{title:"FortuneFlow — BaZi y Cinco Elementos",auto_four:"Cuatro Pilares Automáticos",tip:"Selecciona país, fecha y hora. Completaremos los cuatro pilares y calcularemos los resultados automáticamente.",country:"País",birth_date:"Fecha de nacimiento",birth_time:"Hora de nacimiento",tst:"Hora Solar Verdadera",lon:"Longitud°",autofill:"Auto-Rellenar",err_date:"Por favor, selecciona tu fecha de nacimiento.",tst_show:"Hora Solar Verdadera",pricing:"Precios",basic:"Básico",pro:"Pro",vip:"VIP",buy:"Comprar",month:"/mes",features:"Funciones",includes:"Incluye",checkout:"Pagar",name:"Nombre Completo",email:"Correo",submit:"Enviar",thanks:"¡Gracias! Nos pondremos en contacto pronto.",report:"Informe",download:"Descargar / Imprimir",backhome:"Volver al inicio",pillars:"Pilares",elements:"Cinco Elementos",lucky:"Colores de la Suerte",strongest:"Más fuerte",weakest:"Más débil"}};
+function detectLang(){try{const s=localStorage.getItem('ff_lang');if(s)return s;const n=(navigator.languages&&navigator.languages[0])||navigator.language||'en';if(n.toLowerCase().startsWith('zh'))return 'zh';if(n.toLowerCase().startsWith('es'))return 'es';return 'en';}catch(e){return 'en';}}
+function setLang(l){localStorage.setItem('ff_lang',l);applyLang(l);}
+function applyLang(l){const t=I18N[l]||I18N.en;document.title=t.title;const set=(id,key)=>{const e=document.getElementById(id);if(e&&t[key])e.textContent=t[key];};set('title-text','title');set('i_auto_four','auto_four');set('i_tip','tip');set('i_country_label','country');set('i_date_label','birth_date');set('i_time_label','birth_time');set('i_tst','tst');set('i_lon_label','lon');set('i_autofill','autofill');const sel=document.getElementById('lang');if(sel&&sel.value!==l)sel.value=l;}
+document.addEventListener('DOMContentLoaded',function(){const l=detectLang();applyLang(l);const sel=document.getElementById('lang');if(sel){sel.value=l;sel.addEventListener('change',()=>setLang(sel.value));}});
+</script><script>
+document.addEventListener('DOMContentLoaded',()=>{
+  const params=new URLSearchParams(location.search);
+  document.getElementById('plan').value=(params.get('plan')||'basic').toUpperCase();
+  const l=detectLang(), t=I18N[l]||I18N.en;
+  document.getElementById('title-text').textContent=t.checkout;
+  document.getElementById('i_name').textContent=t.name;
+  document.getElementById('i_email').textContent=t.email;
+  document.getElementById('submit-btn').textContent=t.submit;
+  document.getElementById('form').addEventListener('submit',()=>{
+    const name=document.getElementById('name').value.trim();
+    const email=document.getElementById('email').value.trim();
+    const plan=document.getElementById('plan').value;
+    if(!name||!email){ alert('Please fill in all fields'); return; }
+    const subs=JSON.parse(localStorage.getItem('ff_subs')||'[]');
+    subs.push({name,email,plan,date:new Date().toISOString()});
+    localStorage.setItem('ff_subs', JSON.stringify(subs));
+    const thanks=document.getElementById('thanks'); thanks.textContent=t.thanks; thanks.style.display='inline-block';
+  });
+});
+</script></body></html>
