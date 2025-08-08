@@ -1,22 +1,28 @@
 
 // Day-2.3: Plain script (no modules). Country -> UTC offset auto-fill.
 (function(){
+  
   var COUNTRY_TIME = [
+    // --- Priority markets ---
     ["China (+08:00)", 480, 480, false, "N"],
+    ["USA - Los Angeles (-480/-420)", -480, -420, true, "N"],
+    ["USA - New York (-300/-240)", -300, -240, true, "N"],
+    ["Canada - Toronto (-300/-240)", -300, -240, true, "N"],
     ["Hong Kong (+08:00)", 480, 480, false, "N"],
     ["Taiwan (+08:00)", 480, 480, false, "N"],
     ["Japan (+09:00)", 540, 540, false, "N"],
     ["South Korea (+09:00)", 540, 540, false, "N"],
+    ["Mexico City (-360)", -360, -360, false, "N"],
+    ["Spain (+60/+120)", 60, 120, true, "N"],
+    // --- Others (still available) ---
     ["Singapore (+08:00)", 480, 480, false, "N"],
     ["Malaysia (+08:00)", 480, 480, false, "N"],
     ["Thailand (+07:00)", 420, 420, false, "N"],
     ["Vietnam (+07:00)", 420, 420, false, "N"],
     ["Philippines (+08:00)", 480, 480, false, "N"],
-    ["India (+05:30)", 330, 330, false, "N"],
     ["United Kingdom (0/+60)", 0, 60, true, "N"],
     ["Germany (+60/+120)", 60, 120, true, "N"],
     ["France (+60/+120)", 60, 120, true, "N"],
-    ["Spain (+60/+120)", 60, 120, true, "N"],
     ["Italy (+60/+120)", 60, 120, true, "N"],
     ["Netherlands (+60/+120)", 60, 120, true, "N"],
     ["Greece (+120/+180)", 120, 180, true, "N"],
@@ -27,14 +33,11 @@
     ["Australia - Sydney (+10/+11)", 600, 660, true, "S"],
     ["New Zealand - Wellington (+12/+13)", 720, 780, true, "S"],
     ["Brazil - São Paulo (-180/-120)", -180, -120, true, "S"],
-    ["Canada - Toronto (-300/-240)", -300, -240, true, "N"],
     ["Canada - Vancouver (-480/-420)", -480, -420, true, "N"],
-    ["USA - New York (-300/-240)", -300, -240, true, "N"],
     ["USA - Chicago (-360/-300)", -360, -300, true, "N"],
-    ["USA - Denver (-420/-360)", -420, -360, true, "N"],
-    ["USA - Los Angeles (-480/-420)", -480, -420, true, "N"],
-    ["Mexico City (-360)", -360, -360, false, "N"]
+    ["USA - Denver (-420/-360)", -420, -360, true, "N"]
   ];
+
   function populateCountrySelect(id){
     var sel = document.getElementById(id);
     if(!sel) return;

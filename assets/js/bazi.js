@@ -118,6 +118,37 @@ function hourStemIndex(dayStemIdx, hourBranchIdx){
 }
 function mod(n,m){ return ((n % m) + m) % m; }
 
+
+// --- Day-3: True Solar Time helpers ---
+// EoT approximation (minutes) based on day of year (simple Spencer formula-ish)
+function dayOfYearUTC(date){
+  const start = Date.UTC(date.getUTCFullYear(),0,1);
+  const diff = (date.getTime() - start) / (1000*60*60*24);
+  return Math.floor(diff) + 1;
+}
+function equationOfTimeMinutes(doy){
+  // Very rough approximation sufficient for ±1 min level demo
+  const B = 2 * Math.PI * (doy - 81) / 364.0;
+  const eot = 9.87 * Math.sin(2*B) - 7.53 * Math.cos(B) - 1.5 * Math.sin(B);
+  return eot; // minutes
+}
+function standardMeridianDeg(offsetMinutes){
+  // Offset minutes / 60 = hours; central meridian = hours * 15 degrees (west negative handled by sign)
+  return (offsetMinutes/60) * 15; // e.g., +480 -> +120°E; -480 -> -120°W
+}
+function adjustHourByTST(localHour, localMinute, longitudeDeg, offsetMinutes, utcDateForEoT){
+  // Convert local wall clock to "true solar time" at given longitude
+  // ΔT (minutes) = 4*(longitude - standard_meridian) + EoT(doy)
+  const stdMer = standardMeridianDeg(offsetMinutes);
+  const deltaMinutes = 4*(longitudeDeg - stdMer) + equationOfTimeMinutes(dayOfYearUTC(utcDateForEoT));
+  const totalMinutes = localHour*60 + localMinute + deltaMinutes;
+  // Normalize to 0..1439
+  let m = ((totalMinutes % 1440) + 1440) % 1440;
+  const h = Math.floor(m / 60);
+  const min = Math.round(m % 60);
+  return {hour:h, minute:min};
+}
+
 function elementsFromPillars(pillars){
   // pillars = [{stemIdx, branchIdx}, ...]
   const counts = {Wood:0, Fire:0, Earth:0, Metal:0, Water:0};
@@ -183,7 +214,13 @@ function autoFourPillarsFromInput(dateStr, timeStr, utcOffsetMinutesRawRaw){
   const [dStem, dBranch] = sexagenaryDay(utcDate.getUTCFullYear(), utcDate.getUTCMonth()+1, utcDate.getUTCDate());
 
   // Hour pillar
-  const hBranch = hourBranchIndex(hr);
+  // TST adjustment
+  let adjHr = hr, adjMin = min;
+  if (__tst_enabled && typeof __tst_lon === 'number' && !isNaN(__tst_lon)){
+    const adj = adjustHourByTST(hr, min, __tst_lon, utcOffsetMinutes, utcDate);
+    adjHr = adj.hour; adjMin = adj.minute;
+  }
+  const hBranch = hourBranchIndex(adjHr);
   const hStem = hourStemIndex(dStem, hBranch);
 
   // DEBUG
