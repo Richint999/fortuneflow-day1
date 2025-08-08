@@ -60,82 +60,23 @@
 
 
 
-<!-- Easy Mode: Auto-fill Year Pillar -->
-<div style="margin-top:12px;padding:12px;border:1px solid #eee;border-radius:10px;background:#fafafa">
-  <b>Easy Mode</b> — Enter your birth date and click "Auto-fill Year".
-  <div style="display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap">
-    <label for="easy-date">Birth date:</label>
-    <input id="easy-date" type="date" />
-    <button type="button" id="easy-btn" style="padding:6px 12px;border:0;background:#334155;color:#fff;border-radius:6px;cursor:pointer">Auto-fill Year</button>
-    <span id="easy-hint" style="margin-left:8px;color:#475569"></span>
-  </div>
-  <div style="margin-top:6px;font-size:12px;color:#6b7280">Note: This Day‑1 demo uses a simple LiChun ≈ Feb 4 rule. Day‑2 will add precise solar terms & time zone handling.</div>
-</div>
-<script>
-document.addEventListener("DOMContentLoaded", function(){
-  const btn = document.getElementById("easy-btn");
-  const inp = document.getElementById("easy-date");
-  if(btn && inp){
-    btn.addEventListener("click", function(){
-      autofillYearFromDateStr(inp.value);
-    });
-  }
-});
-</script>
 
 
-<!-- Day-2: Auto Four Pillars (approx) -->
-<section class="fortune-panel" style="max-width:980px;margin:40px auto;padding:24px;border:1px solid #e5e7eb;border-radius:12px">
-  <h2 style="margin:0 0 12px">Auto Four Pillars (Day-2)</h2>
-  <p style="margin:0 0 8px">Select your country, then enter date/time. We will auto-fill UTC offset for you (approx for DST).</p>
-  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><label>Country</label><select id="d2-country"></select>
-    <label>Date</label><input id="d2-date" type="date">
-    <label>Time</label><input id="d2-time" type="time" value="12:00">
-    <label>UTC offset (minutes)</label><input id="d2-off" type="number" value="-480" style="width:120px">
-    <button id="d2-btn" style="padding:8px 12px;border:0;background:#0f172a;color:#fff;border-radius:8px;cursor:pointer">Auto-fill All</button>
-    <span id="d2-hint" style="color:#475569"></span>
+
+<!-- Unified Auto Four Pillars (Day-2.4) -->
+<section id="ff-unified" style="max-width:980px;margin:40px auto;padding:24px;border:1px solid #e5e7eb;border-radius:12px">
+  <h2 style="margin:0 0 12px">Auto Four Pillars</h2>
+  <p style="margin:0 10px 12px 0">Select country, date, time. We'll fill the four pillars for you. Then results will be calculated automatically.</p>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+    <label>Country</label><select id="ff-country"></select>
+    <label>Date</label><input id="ff-date" type="date">
+    <label>Time</label><input id="ff-time" type="time" value="12:00">
+    <input id="ff-offset" type="hidden" value="0">
+    <button id="ff-autofill" style="padding:8px 12px;border:0;background:#0f172a;color:#fff;border-radius:8px;cursor:pointer">Auto-Fill</button>
   </div>
-  <div id="d2-out" style="margin-top:12px;font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;"></div>
+  <div id="ff-error" style="display:none;margin-top:10px;color:#b91c1c;background:#fee2e2;border:1px solid #fecaca;padding:8px;border-radius:8px"></div>
+  <div id="ff-disp" style="margin-top:12px;font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;"></div>
 </section>
-<script src="assets/js/bazi.js" defer></script>
-<script>
-document.addEventListener("DOMContentLoaded", function(){
-  const btn = document.getElementById("d2-btn");
-  const out = document.getElementById("d2-out");
-  const hint = document.getElementById("d2-hint");
-  btn && btn.addEventListener("click", function(){
-    const dateStr = (document.getElementById("d2-date").value||"").trim();
-    const timeStr = (document.getElementById("d2-time").value||"").trim();
-    const off = parseInt((document.getElementById("d2-off").value||"0"),10);
-    try{
-      const pillars = autoFourPillarsFromInput(dateStr, timeStr, off);
-      // Fill selects if exist
-      const mp = {year:"year", month:"month", day:"day", hour:"hour"};
-      Object.keys(mp).forEach(k=>{
-        const s = document.getElementById(`${mp[k]}-stem`);
-        const b = document.getElementById(`${mp[k]}-branch`);
-        if(s && b){
-          s.value = String(pillars[k].stemIdx);
-          b.value = String(pillars[k].branchIdx);
-        }
-      });
-      hint.textContent = "Auto-filled. You can now click Calculate.";
-      // Show readable
-      const S = pillars.meta.stemsZh;
-      const B = pillars.meta.branchesZh;
-      const fmt = (p)=> `${S[p.stemIdx]}${B[p.branchIdx]}`;
-      out.innerHTML = `
-        <div>Year: ${fmt(pillars.year)} (${pillars.meta.yAdj})</div>
-        <div>Month: ${fmt(pillars.month)}</div>
-        <div>Day: ${fmt(pillars.day)}</div>
-        <div>Hour: ${fmt(pillars.hour)}</div>
-      `;
-    }catch(e){
-      hint.textContent = e.message || "Invalid input";
-    }
-  });
-});
-</script>
 
 <!-- Day-1 Interactive Demo Panel (append) -->
 <section class="fortune-panel" style="max-width:980px;margin:40px auto;padding:24px;border:1px solid #eee;border-radius:12px">
@@ -228,6 +169,70 @@ document.addEventListener("DOMContentLoaded", function(){
     dateInp && dateInp.addEventListener("change", syncOffset);
     setTimeout(syncOffset, 0);
   }
+});
+</script>
+
+
+<script src="assets/js/geo.js" defer></script>
+<script src="assets/js/bazi.js" defer></script>
+<script src="assets/js/fortune.js" defer></script>
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+  // Populate country and hook date->offset
+  if (window.__FF_COUNTRY__){
+    window.__FF_COUNTRY__.populateCountrySelect("ff-country");
+  }
+  function syncOffset(){
+    var c = document.getElementById("ff-country"), dt = document.getElementById("ff-date"), off = document.getElementById("ff-offset");
+    if (!c || !dt || !off) return;
+    var minutes = window.__FF_COUNTRY__ ? window.__FF_COUNTRY__.inferOffsetFromCountryAndDate(parseInt(c.value||"0",10), dt.value||"") : 0;
+    if (!isNaN(minutes)) off.value = String(minutes);
+  }
+  document.getElementById("ff-country")?.addEventListener("change", syncOffset);
+  document.getElementById("ff-date")?.addEventListener("change", syncOffset);
+  setTimeout(syncOffset, 0);
+
+  // Single Auto-Fill button
+  var btn = document.getElementById("ff-autofill");
+  var err = document.getElementById("ff-error");
+  var disp = document.getElementById("ff-disp");
+  btn && btn.addEventListener("click", function(){
+    err.style.display = "none";
+    var dateStr = (document.getElementById("ff-date").value||"").trim();
+    var timeStr = (document.getElementById("ff-time").value||"").trim();
+    var offStr  = (document.getElementById("ff-offset").value||"0").trim();
+    if (!dateStr){
+      err.textContent = "Please select your birth date."; err.style.display="block"; return;
+    }
+    try{
+      var pillars = autoFourPillarsFromInput(dateStr, timeStr, offStr);
+      // Fill selects
+      var map = {year:"year", month:"month", day:"day", hour:"hour"};
+      Object.keys(map).forEach(function(k){
+        var s = document.getElementById(map[k]+"-stem");
+        var b = document.getElementById(map[k]+"-branch");
+        if(s && b){
+          s.value = String(pillars[k].stemIdx);
+          b.value = String(pillars[k].branchIdx);
+        }
+      });
+      // Show readable and auto-calc
+      var S = ["甲","乙","丙","丁","戊","己","庚","辛","壬","癸"];
+      var B = ["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
+      function fmt(p){ return S[p.stemIdx] + B[p.branchIdx]; }
+      disp.innerHTML = "<div>Year: "+fmt(pillars.year)+"</div>"+
+                       "<div>Month: "+fmt(pillars.month)+"</div>"+
+                       "<div>Day: "+fmt(pillars.day)+"</div>"+
+                       "<div>Hour: "+fmt(pillars.hour)+"</div>";
+      // auto-click "Calculate" if present
+      document.getElementById("calc-btn")?.click();
+      // Scroll to results area
+      document.getElementById("five-bars")?.scrollIntoView({behavior:"smooth", block:"center"});
+    }catch(e){
+      err.textContent = e.message || "Unknown error"; err.style.display = "block";
+      console.error("Auto-Fill error:", e);
+    }
+  });
 });
 </script>
 
