@@ -85,6 +85,9 @@
     <button id="ff-autofill" style="padding:8px 12px;border:0;background:#0f172a;color:#fff;border-radius:8px;cursor:pointer">Auto-Fill</button>
   </div>
   <div id="ff-error" style="display:none;margin-top:10px;color:#b91c1c;background:#fee2e2;border:1px solid #fecaca;padding:8px;border-radius:8px"></div>
+  
+  <div id="ff-tst-time" style="margin-top:8px;color:#334155;"></div>
+
   <div id="ff-disp" style="margin-top:12px;font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;"></div>
 </section>
 
@@ -235,6 +238,27 @@ document.addEventListener("DOMContentLoaded", function(){
                        "<div>Day: "+fmt(pillars.day)+"</div>"+
                        "<div>Hour: "+fmt(pillars.hour)+"</div>";
       // auto-click "Calculate" if present
+      // Show True Solar Time (if enabled and longitude provided)
+      try{
+        var show = document.getElementById("ff-tst-time");
+        var tstOn = document.getElementById("ff-tst")?.checked;
+        var lonVal = parseFloat((document.getElementById("ff-lon")?.value||"").trim());
+        if (show && tstOn && !isNaN(lonVal)){
+          // Reconstruct UTC date object to pass into helper
+          var partsD = dateStr.split("-"); var Y=parseInt(partsD[0],10), M=parseInt(partsD[1],10), D=parseInt(partsD[2],10);
+          var partsT = (timeStr||"12:00").split(":"); var H=parseInt(partsT[0]||"12",10), Min=parseInt(partsT[1]||"0",10);
+          var offMin = parseInt(offStr,10) || 0;
+          var localWall = new Date(Date.UTC(Y,(M-1),D,H,Min));
+          var utcMillis = localWall.getTime() - offMin*60*1000;
+          var utcDate = new Date(utcMillis);
+          var adj = adjustHourByTST(H, Min, lonVal, offMin, utcDate);
+          var hh = String(adj.hour).padStart(2,"0");
+          var mm = String(adj.minute).padStart(2,"0");
+          show.textContent = "True Solar Time: " + hh + ":" + mm;
+        } else if (show){
+          show.textContent = "";
+        }
+      }catch(e){ console.warn("TST display error", e); }
       document.getElementById("calc-btn")?.click();
       // Scroll to results area
       document.getElementById("five-bars")?.scrollIntoView({behavior:"smooth", block:"center"});

@@ -46,4 +46,21 @@
   <div>© 2025 FortuneFlow · Privacy-first · Bilingual (EN/中文)</div>
 </div>
 
+<!-- Unified Auto Four Pillars (Day-2.4) -->
+<section id="ff-unified" style="max-width:980px;margin:40px auto;padding:24px;border:1px solid #e5e7eb;border-radius:12px">
+  <h2 style="margin:0 0 12px">Auto Four Pillars</h2>
+  <p style="margin:0 10px 12px 0">Select country, date, time. We'll fill the four pillars for you. Then results will be calculated automatically.</p>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+    <label for="ff-country">Country</label><select id="ff-country"></select>
+    <label for="ff-date">Date</label><input id="ff-date" type="date">
+    <label for="ff-time">Time</label><input id="ff-time" type="time" value="12:00">
+    <input id="ff-offset" type="hidden" value="0">
+    <button id="ff-autofill" style="padding:8px 12px;border:0;background:#0f172a;color:#fff;border-radius:8px;cursor:pointer">Auto-Fill</button>
+  </div>
+  <div id="ff-error" style="display:none;margin-top:10px;color:#b91c1c;background:#fee2e2;border:1px solid #fecaca;padding:8px;border-radius:8px"></div>
+  
+  <div id="ff-tst-time" style="margin-top:8px;color:#334155;"></div>
+
+  <div id="ff-disp" style="margin-top:12px;font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;"></div>
+</section>
 </body></html>
