@@ -107,25 +107,4 @@ function renderBars(counts){ const c=document.getElementById('five-bars'); if(!c
 function renderTable(counts){ const table=document.createElement('table'); table.innerHTML='<thead><tr><th>Five Elements</th><th style=\"text-align:right\">#</th></tr></thead>'; const tbody=document.createElement('tbody'); ELEMENT_KEYS.forEach(k=>{ const tr=document.createElement('tr'); tr.innerHTML='<td>'+k+'</td><td style=\"text-align:right\">'+(counts[k]||0)+'</td>'; tbody.appendChild(tr); }); table.appendChild(tbody); const host=document.getElementById('result-host'); if(host){ host.innerHTML=''; host.appendChild(table); } }
 function calculateAndShow(){ const ids=['year','month','day','hour']; const arr=ids.map(p=>{ const s=parseInt(document.getElementById(p+'-stem').value,10); const b=parseInt(document.getElementById(p+'-branch').value,10); return tally(s,b); }); const t=totalCounts(arr); renderBars(t); renderTable(t); const order=Object.entries(t).sort((a,b)=>b[1]-a[1]); const most=order[0][0], least=order[4][0]; const lucky=luckyBy(least); document.getElementById('advice').innerHTML='<b>Strongest:</b> '+most+'<br/><b>Weakest:</b> '+least+'<br/><b>Lucky colors:</b> '+(lucky.join(', ')||'—'); localStorage.setItem('ff_result_en', JSON.stringify({counts:t,most,least,lucky})); }
 document.addEventListener('DOMContentLoaded',function(){ ['year','month','day','hour'].forEach(p=>{buildSelect(STEMS_DATA,p+'-stem');buildSelect(BRANCHES_DATA,p+'-branch');}); document.getElementById('calc-btn').addEventListener('click',calculateAndShow); populateCountry(); function sync(){try{const idx=parseInt(document.getElementById('ff-country').value||'0',10); const d=(document.getElementById('ff-date').value||''); document.getElementById('ff-offset').value=String(inferOffset(idx,d));}catch(e){console.warn('offset fallback',e); document.getElementById('ff-offset').value='0';}} document.getElementById('ff-country').addEventListener('change',sync); document.getElementById('ff-date').addEventListener('change',sync); sync(); document.getElementById('ff-autofill').addEventListener('click',function(){ const err=document.getElementById('ff-error'); err.style.display='none'; const ds=(document.getElementById('ff-date').value||'').trim(); const ts=(document.getElementById('ff-time').value||'').trim(); const os=(document.getElementById('ff-offset').value||'0').trim(); if(!ds){err.textContent='Please select your birth date.'; err.style.display='block'; return;} try{ const p=autoFourPillarsFromInput(ds,ts,os); ['year','month','day','hour'].forEach(id=>{ document.getElementById(id+'-stem').value=String(p[id].stemIdx); document.getElementById(id+'-branch').value=String(p[id].branchIdx);}); const S=STEMS_ZH,B=BRANCHES_ZH; const fmt=q=>S[q.stemIdx]+B[q.branchIdx]; document.getElementById('ff-disp').innerHTML='<div class=\"mono\" style=\"padding:10px;border:1px solid #eee;border-radius:8px\"><div><b>Year:</b> '+fmt(p.year)+'</div><div><b>Month:</b> '+fmt(p.month)+'</div><div><b>Day:</b> '+fmt(p.day)+'</div><div><b>Hour:</b> '+fmt(p.hour)+'</div></div>'; calculateAndShow(); }catch(e){err.textContent=e.message||'Error'; err.style.display='block'; console.error(e);} }); });</script>
-<script src="/countries.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function(){
-  if (!window.COUNTRIES) return;
-  var sels = document.querySelectorAll('select[id*="country" i], select[name*="country" i]');
-  for (var i=0;i<sels.length;i++){
-    var sel = sels[i];
-    var current = sel.value || '';
-    sel.innerHTML = COUNTRIES.map(function(c){
-      var opt = document.createElement('option');
-      opt.value = c.value;
-      opt.textContent = c.label;
-      return opt.outerHTML;
-    }).join('');
-    // Try to keep previous value if it existed
-    if (current) sel.value = current;
-    // If not found, select first option
-    if (!sel.value && sel.options.length>0) sel.selectedIndex = 0;
-  }
-});
-</script>
 </body></html>

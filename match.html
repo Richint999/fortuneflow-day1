@@ -10,7 +10,9 @@
     <div>
       <h3>You</h3>
       <div class="grid cols-2">
-        <div><label>Country</label><select id="a-country"><option value="CN">China</option><option value="US">United States</option><option value="CA">Canada</option><option value="UK">United Kingdom</option><option value="AU">Australia</option><option value="DE">Germany</option><option value="FR">France</option><option value="ES">Spain</option></select></div>
+        <div><label>Country</label><select id="a-country">
+          <option value="US">United States</option><option value="CN" selected>China</option><option value="CA">Canada</option><option value="UK">United Kingdom</option><option value="AU">Australia</option><option value="DE">Germany</option><option value="FR">France</option><option value="ES">Spain</option>
+        </select></div>
         <div><label>Hour (optional)</label><select id="a-hour">
           <option value="">Unknown</option>
           <option value="1">01:00</option><option value="3">03:00</option><option value="5">05:00</option><option value="7">07:00</option>
@@ -25,7 +27,9 @@
     <div>
       <h3>Partner</h3>
       <div class="grid cols-2">
-        <div><label>Country</label><select id="b-country"><option value="CN">China</option><option value="US">United States</option><option value="CA">Canada</option><option value="UK">United Kingdom</option><option value="AU">Australia</option><option value="DE">Germany</option><option value="FR">France</option><option value="ES">Spain</option></select></div>
+        <div><label>Country</label><select id="b-country">
+          <option value="US">United States</option><option value="CN" selected>China</option><option value="CA">Canada</option><option value="UK">United Kingdom</option><option value="AU">Australia</option><option value="DE">Germany</option><option value="FR">France</option><option value="ES">Spain</option>
+        </select></div>
         <div><label>Hour (optional)</label><select id="b-hour">
           <option value="">Unknown</option>
           <option value="1">01:00</option><option value="3">03:00</option><option value="5">05:00</option><option value="7">07:00</option>
@@ -125,26 +129,5 @@
       document.getElementById('explain').innerHTML=bullets.map(x=>'• '+x).join('<br>');
     });
   });
-</script>
-<script src="/countries.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function(){
-  if (!window.COUNTRIES) return;
-  var sels = document.querySelectorAll('select[id*="country" i], select[name*="country" i]');
-  for (var i=0;i<sels.length;i++){
-    var sel = sels[i];
-    var current = sel.value || '';
-    sel.innerHTML = COUNTRIES.map(function(c){
-      var opt = document.createElement('option');
-      opt.value = c.value;
-      opt.textContent = c.label;
-      return opt.outerHTML;
-    }).join('');
-    // Try to keep previous value if it existed
-    if (current) sel.value = current;
-    // If not found, select first option
-    if (!sel.value && sel.options.length>0) sel.selectedIndex = 0;
-  }
-});
 </script>
 </body></html>
