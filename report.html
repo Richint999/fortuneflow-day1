@@ -10,7 +10,7 @@
 .kv .tag{background:#203052;border:1px solid #2a3d63;padding:4px 8px;border-radius:999px}
 h3{margin:8px 0}
 </style>
-</head><body>
+<style>/*paywall*/ .lock{filter:blur(2px);opacity:.7;pointer-events:none}</style></head><body>
 <div class="topbar no-print"><div class="container row">
   <div class="brand">FortuneFlow</div>
   <nav>
@@ -35,7 +35,7 @@ h3{margin:8px 0}
 
     <div id="pro-wrap">
       <div id="pro-sections" class="">
-        <div class="subsec"><h3>Career Fit</h3><div id="career-good" class="kv"></div></div>
+        <div class="subsec"><div id="pro"><div id="cta-upgrade" style="display:none;margin:10px 0;"><a class="button" href="pricing.html">See full insights – Subscribe</a></div><h3>Career Fit</h3><div id="career-good" class="kv"></div></div>
         <div class="subsec"><h3>Use Caution</h3><div id="career-caution" class="kv"></div></div>
         <div class="subsec"><h3>Strengths & Risks</h3><div id="strengths" class="kv"></div><div id="risks" class="kv" style="margin-top:6px"></div></div>
         <div class="subsec"><h3>Action Tips (Next 7 Days)</h3><ul id="actions" style="margin:0 0 0 18px"></ul></div>
@@ -99,4 +99,23 @@ document.addEventListener('DOMContentLoaded',()=>{
   }
 });
 </script>
+
+<script>
+function paid(){
+  try{
+    const s = JSON.parse(localStorage.getItem('ff_subs')||'[]');
+    if (Array.isArray(s) && s.length>0) return true;
+  }catch(e){}
+  return !!localStorage.getItem('ff_last_plan');
+}
+document.addEventListener('DOMContentLoaded', function(){
+  var pro = document.getElementById('pro');
+  var cta = document.getElementById('cta-upgrade');
+  if (pro && !paid()){
+    pro.classList.add('lock');
+    if (cta) cta.style.display = 'block';
+  }
+});
+</script>
+
 </body></html>
