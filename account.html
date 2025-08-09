@@ -1,42 +1,16 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Account</title><link rel="stylesheet" href="styles.css">
-<style>.table-wrap{overflow-x:auto}.muted{color:#a7b3c9;font-size:14px}.actions{display:flex;gap:10px;align-items:center}.pill{background:#203052;border:1px solid #2a3d63;color:#e6eefc;padding:2px 8px;border-radius:999px;font-size:12px}</style>
-</head><body><div class="topbar no-print">
-  <div class="container row">
-    <div class="brand">FortuneFlow</div>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="pricing.html">Pricing</a>
-      <a href="account.html">Account</a>
-      <a href="report.html">Report</a>
-     <a href="match.html">Partner Match</a>
-</nav>
-  </div>
-</div>
-<div class="container">
-  <h1>Account</h1>
-  <section class="card">
-    <p class="muted">Mock subscriptions stored in your browser:</p>
-    <div id="empty" class="muted" style="display:none">No subscriptions found.</div>
-    <div id="table-host" class="table-wrap" style="margin-top:8px"></div>
-    <div class="actions" style="margin-top:14px">
-      <button id="clear">Clear</button>
-      <span id="count" class="pill" title="Total subscriptions">0</span>
-    </div>
-  </section>
-</div>
+<!doctype html><html><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">
+<title>Account</title><link rel=stylesheet href=styles.css></head><body>
+<div class=topbar><div class="container row"><div class=brand>FortuneFlow</div>
+<nav><a href=index.html>Home</a><a href=report.html>Report</a><a href=match.html>Partner Match</a><a href=pricing.html>Pricing</a><a href=account.html aria-current=page>Account</a></nav></div></div>
+<div class=container><h1>Account</h1><div class=card>
+  <div class=small>Subscriptions stored in your browser:</div>
+  <div id=empty class=small style="display:none">No subscriptions found.</div>
+  <div id=table></div>
+  <div style=margin-top:12px><button id=clear>Clear</button> <span id=count class=tag>0</span></div>
+</div></div>
 <script>
-function fmtDate(iso){ try{ const d=new Date(iso); const pad=n=>String(n).padStart(2,'0'); return d.getUTCFullYear()+'-'+pad(d.getUTCMonth()+1)+'-'+pad(d.getUTCDate())+' '+pad(d.getUTCHours())+':'+pad(d.getUTCMinutes())+':'+pad(d.getUTCSeconds())+' UTC'; }catch(e){ return iso||''; } }
-function renderTable(rows){
-  const host=document.getElementById('table-host'); host.innerHTML='';
-  if(!rows||rows.length===0){ document.getElementById('empty').style.display='block'; document.getElementById('count').textContent='0'; return; }
-  document.getElementById('empty').style.display='none'; document.getElementById('count').textContent=String(rows.length);
-  const table=document.createElement('table'); table.innerHTML='<thead><tr><th>Name</th><th>Email</th><th>Plan</th><th style=\"text-align:right\">Date/Time</th></tr></thead><tbody></tbody>';
-  const tbody=table.querySelector('tbody');
-  rows.forEach(r=>{ const tr=document.createElement('tr'); tr.innerHTML='<td>'+ (r.name||'') +'</td><td>'+ (r.email||'') +'</td><td>'+ (r.plan||'') +'</td><td style=\"text-align:right\">'+ fmtDate(r.date) +'</td>'; tbody.appendChild(tr); });
-  host.appendChild(table);
-}
-function loadSubs(){ let rows=[]; try{ rows=JSON.parse(localStorage.getItem('ff_subs')||'[]'); }catch(e){ rows=[]; } renderTable(rows); }
-document.addEventListener('DOMContentLoaded',()=>{ loadSubs(); document.getElementById('clear').addEventListener('click',()=>{ localStorage.removeItem('ff_subs'); loadSubs(); }); });
-</script>
-</body></html>
+function fmt(iso){try{const d=new Date(iso),p=n=>String(n).padStart(2,'0');return d.getUTCFullYear()+'-'+p(d.getUTCMonth()+1)+'-'+p(d.getUTCDate())+' '+p(d.getUTCHours())+':'+p(d.getUTCMinutes())+' UTC';}catch(e){return iso||'';}}
+function render(rows){const host=document.getElementById('table');host.innerHTML='';if(!rows||rows.length===0){document.getElementById('empty').style.display='block';document.getElementById('count').textContent='0';return;}document.getElementById('empty').style.display='none';document.getElementById('count').textContent=String(rows.length);const t=document.createElement('table');t.innerHTML='<thead><tr><th>Name</th><th>Email</th><th>Plan</th><th style="text-align:right">Date</th></tr></thead><tbody></tbody>';const b=t.querySelector('tbody');rows.forEach(r=>{const tr=document.createElement('tr');tr.innerHTML='<td>'+r.name+'</td><td>'+r.email+'</td><td>'+r.plan+'</td><td style="text-align:right">'+fmt(r.date)+'</td>';b.appendChild(tr);});host.appendChild(t);}
+function load(){let r=[];try{r=JSON.parse(localStorage.getItem('ff_subs')||'[]')}catch(e){r=[]}render(r)}
+document.addEventListener('DOMContentLoaded',()=>{load();document.getElementById('clear').addEventListener('click',()=>{localStorage.removeItem('ff_subs');load();});});
+</script></body></html>
