@@ -26,16 +26,22 @@
 <script>
 document.addEventListener('DOMContentLoaded',()=>{
   const params=new URLSearchParams(location.search);
-  document.getElementById('plan').value=(params.get('plan')||'basic').toUpperCase();
+  const plan=(params.get('plan')||'basic').toUpperCase();
+  document.getElementById('plan').value=plan;
+
   document.getElementById('submit-btn').addEventListener('click',()=>{
     const name=document.getElementById('name').value.trim();
     const email=document.getElementById('email').value.trim();
-    const plan=document.getElementById('plan').value;
     if(!name||!email){ alert('Please fill in all fields'); return; }
+
     const subs=JSON.parse(localStorage.getItem('ff_subs')||'[]');
     subs.push({name,email,plan,date:new Date().toISOString()});
     localStorage.setItem('ff_subs', JSON.stringify(subs));
-    const thanks=document.getElementById('thanks'); thanks.textContent='Thank you! We\'ll contact you shortly.'; thanks.style.display='inline-block';
+    localStorage.setItem('ff_last_plan', plan);
+    const thanks=document.getElementById('thanks');
+    thanks.textContent='Thank you! Redirecting to Account...';
+    thanks.style.display='inline-block';
+    setTimeout(()=>{ window.location.href='account.html'; }, 500);
   });
 });
 </script>
