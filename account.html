@@ -30,9 +30,9 @@ function renderTable(rows){
   const host=document.getElementById('table-host'); host.innerHTML='';
   if(!rows||rows.length===0){ document.getElementById('empty').style.display='block'; document.getElementById('count').textContent='0'; return; }
   document.getElementById('empty').style.display='none'; document.getElementById('count').textContent=String(rows.length);
-  const table=document.createElement('table'); table.innerHTML='<thead><tr><th>Name</th><th>Email</th><th>Plan</th><th style="text-align:right">Date/Time</th></tr></thead><tbody></tbody>';
+  const table=document.createElement('table'); table.innerHTML='<thead><tr><th>Name</th><th>Email</th><th>Plan</th><th style=\"text-align:right\">Date/Time</th></tr></thead><tbody></tbody>';
   const tbody=table.querySelector('tbody');
-  rows.forEach(r=>{ const tr=document.createElement('tr'); tr.innerHTML='<td>'+ (r.name||'') +'</td><td>'+ (r.email||'') +'</td><td>'+ (r.plan||'') +'</td><td style="text-align:right">'+ fmtDate(r.date) +'</td>'; tbody.appendChild(tr); });
+  rows.forEach(r=>{ const tr=document.createElement('tr'); tr.innerHTML='<td>'+ (r.name||'') +'</td><td>'+ (r.email||'') +'</td><td>'+ (r.plan||'') +'</td><td style=\"text-align:right\">'+ fmtDate(r.date) +'</td>'; tbody.appendChild(tr); });
   host.appendChild(table);
 }
 function loadSubs(){ let rows=[]; try{ rows=JSON.parse(localStorage.getItem('ff_subs')||'[]'); }catch(e){ rows=[]; } renderTable(rows); }

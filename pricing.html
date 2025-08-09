@@ -22,14 +22,14 @@
         <div class="price">$1 <span>/day</span></div>
         <div>✔ Unlimited reports for the day</div>
         <div>✔ Cancel anytime</div>
-        <a class="button" href="checkout.html?plan=daily">Buy Now</a>
+        <a id="buy-daily" class="button" href="#">Buy Now</a>
       </div>
       <div class="plan">
         <h3>Basic</h3>
         <div class="price">$9 <span>/month</span></div>
         <div>✔ 5 reports / month</div>
         <div>✔ Email support</div>
-        <a class="button" href="checkout.html?plan=basic">Buy Now</a>
+        <a id="buy-basic" class="button" href="#">Buy Now</a>
       </div>
       <div class="plan" style="border-color:#355a9a">
         <div class="badge">Popular</div>
@@ -37,7 +37,7 @@
         <div class="price">$19 <span>/month</span></div>
         <div>✔ 30 reports / month</div>
         <div>✔ Priority support</div>
-        <a class="button" href="checkout.html?plan=pro">Buy Now</a>
+        <a id="buy-pro" class="button" href="#">Buy Now</a>
       </div>
       <div class="plan" style="border-color:#ffd34e">
         <div class="badge">Best value</div>
@@ -45,9 +45,19 @@
         <div class="price">$49 <span>/month</span></div>
         <div>✔ Unlimited reports</div>
         <div>✔ 1:1 concierge</div>
-        <a class="button" href="checkout.html?plan=vip">Buy Now</a>
+        <a id="buy-vip" class="button" href="#">Buy Now</a>
       </div>
     </div>
   </section>
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const from = new URLSearchParams(location.search).get('from') || '';
+  const to = p => 'checkout.html?plan=' + p + (from ? ('&from='+encodeURIComponent(from)) : '');
+  document.getElementById('buy-daily').href = to('daily');
+  document.getElementById('buy-basic').href = to('basic');
+  document.getElementById('buy-pro').href = to('pro');
+  document.getElementById('buy-vip').href = to('vip');
+});
+</script>
 </body></html>
