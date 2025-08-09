@@ -37,18 +37,18 @@ h3{margin:8px 0}
         <div class="subsec"><h3>Career Fit</h3><div id="career-good" class="kv"></div></div>
         <div class="subsec"><h3>Use Caution</h3><div id="career-caution" class="kv"></div></div>
         <div class="subsec"><h3>Strengths & Risks</h3><div id="strengths" class="kv"></div><div id="risks" class="kv" style="margin-top:6px"></div></div>
-        <div class="subsec"><h3>Action Tips (Next 7 Days)</h3><ul id="actions" style="margin:0 0 0 18px"></ul></div>
+        <div class="subsec"><h3>Ideal Partner Match</h3><ul id="partner-bullets" style="margin:0 0 0 18px"></ul></div>
         <div class="subsec"><h3>Lucky Windows</h3><div id="windows" class="kv"></div></div>
       </div>
       <div id="cta" class="cta" style="display:none">
         <h3>🔍 Want to know this?</h3>
         <ul class="bullets">
-          <li><b>Which roles fit you</b> (industry & position)</li>
-          <li><b>Your strengths and weak spots</b> — what to lean into, what to avoid</li>
+          <li><b>Your ideal partner type</b> (by elements)</li>
+          <li><b>How you complement each other</b> — strengths you bring, gaps they fill</li>
           <li><b>How to catch opportunities</b> and sidestep risks in the next 12 months</li>
         </ul>
         <div style="margin-top:10px">
-          <a id="cta-btn" class="button" href="pricing.html?from=report">Subscribe to unlock</a>
+          <a id="cta-btn" class="button" href="pricing.html?from=report">Unlock your match</a>
           <div class="muted" style="margin-top:8px;font-size:13px">Daily plan just <b>$1/day</b>. Cancel anytime.</div>
         </div>
       </div>
@@ -114,7 +114,35 @@ function dynamicActions(dom){
   // Generic balance guidance
   if(dom.balanced){
     tips.push("You’re relatively balanced — double down on your strongest edge for visible wins.");
+  } 
+function partnerMatchByElements(least, most){
+  // Map weakest element -> complementary partner elements (2 choices)
+  const pairs = {
+    Wood:  { elements:["Fire","Water"], traits:["Warm & expressive","Strategic & supportive"] },
+    Fire:  { elements:["Earth","Wood"], traits:["Grounded & reliable","Growth-minded & empathetic"] },
+    Earth: { elements:["Metal","Fire"], traits:["Principled & disciplined","Energetic & visible"] },
+    Metal: { elements:["Water","Earth"], traits:["Adaptive & insightful","Stable & patient"] },
+    Water: { elements:["Wood","Metal"], traits:["Nurturing & growth-oriented","Orderly & trustworthy"] }
+  };
+  const pick = pairs[least] || {elements:[most], traits:["Balanced personality"]};
+  return pick;
+}
+function buildPartnerBullets(dom){
+  const rec = partnerMatchByElements(dom.least, dom.most);
+  const bullets = [];
+  bullets.push("Best elemental match: " + rec.elements.join(" or "));
+  if(dom.gap >= 3){
+    bullets.push("You benefit from a partner who brings balance and structure.");
   } else {
+    bullets.push("You pair well with someone who amplifies your strengths without creating imbalance.");
+  }
+  // Traits
+  rec.traits.forEach(t => bullets.push("Look for traits: " + t));
+  // Practical tip
+  bullets.push("First date cue: choose colors linked to your weakest element for harmony.");
+  return bullets.slice(0,5);
+}
+else {
     tips.push("Rebalance first: add small daily habits that favor your weakest element.");
   }
   // By weakest element
