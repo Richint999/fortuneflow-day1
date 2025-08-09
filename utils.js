@@ -1,0 +1,14 @@
+const ELEMENT_KEYS=['Wood','Fire','Earth','Metal','Water'];
+const STEMS_DATA=[{zh:'甲',e:'Wood'},{zh:'乙',e:'Wood'},{zh:'丙',e:'Fire'},{zh:'丁',e:'Fire'},{zh:'戊',e:'Earth'},{zh:'己',e:'Earth'},{zh:'庚',e:'Metal'},{zh:'辛',e:'Metal'},{zh:'壬',e:'Water'},{zh:'癸',e:'Water'}];
+const BRANCHES_DATA=[{zh:'子',e:['Water']},{zh:'丑',e:['Earth','Water','Metal']},{zh:'寅',e:['Wood','Fire','Earth']},{zh:'卯',e:['Wood']},{zh:'辰',e:['Earth','Wood','Water']},{zh:'巳',e:['Fire','Metal','Earth']},{zh:'午',e:['Fire','Earth']},{zh:'未',e:['Earth','Wood','Fire']},{zh:'申',e:['Metal','Water','Earth']},{zh:'酉',e:['Metal']},{zh:'戌',e:['Earth','Fire','Metal']},{zh:'亥',e:['Water','Wood']}];
+function mod(n,m){return((n%m)+m)%m;}function julianDayNumber(y,m,d){const a=Math.floor((14-m)/12);const y2=y+4800-a;const m2=m+12*a-3;return d+Math.floor((153*m2+2)/5)+365*y2+Math.floor(y2/4)-Math.floor(y2/100)+Math.floor(y2/400)-32045;}
+function sexagenaryDay(y,m,d){const j=julianDayNumber(y,m,d);const idx=mod(j+49,60);return[idx%10,idx%12];}function lichunAdjustedYear(date){const y=date.getUTCFullYear(),m=date.getUTCMonth(),d=date.getUTCDate();if(m<1)return y-1;if(m===1&&d<4)return y-1;return y;}
+function sexagenaryYear(y){return[mod((y-4),10),mod((y-4),12)];}
+function monthPillar(yStem,date){const m=date.getUTCMonth(),d=date.getUTCDate();const S={1:4,2:6,3:5,4:6,5:6,6:7,7:8,8:8,9:8,10:7,11:7,12:6};let k=0;
+ if(m===1)k=(d>=S[1])?1:12;else if(m===2)k=(d>=S[2])?2:1;else if(m===3)k=(d>=S[3])?3:2;else if(m===4)k=(d>=S[4])?4:3;else if(m===5)k=(d>=S[5])?5:4;else if(m===6)k=(d>=S[6])?6:5;else if(m===7)k=(d>=S[7])?7:6;else if(m===8)k=(d>=S[8])?8:7;else if(m===9)k=(d>=S[9])?9:8;else if(m===10)k=(d>=S[10])?10:9;else if(m===11)k=(d>=S[11])?11:10;else if(m===0)k=(d>=S[12])?12:11;
+ const branchIdx=mod(2+(k-1),12);const start={0:2,5:2,1:4,6:4,2:6,7:6,3:8,8:8,4:0,9:0}[yStem];const stemIdx=mod(start+(k-1),10);return[stemIdx,branchIdx];}
+function tally(stemIdx,branchIdx){const c={Wood:0,Fire:0,Earth:0,Metal:0,Water:0};c[STEMS_DATA[stemIdx].e]+=1;BRANCHES_DATA[branchIdx].e.forEach(e=>c[e]+=1);return c;}
+function totalCounts(arr){const t={Wood:0,Fire:0,Earth:0,Metal:0,Water:0};arr.forEach(c=>ELEMENT_KEYS.forEach(k=>t[k]+=c[k]||0));return t;}
+function dominance(counts){const entries=Object.entries(counts).sort((a,b)=>b[1]-a[1]);const most=entries[0][0],least=entries[entries.length-1][0];const gap=entries[0][1]-entries[entries.length-1][1];const avg=entries.reduce((s,kv)=>s+kv[1],0)/entries.length;const variance=entries.reduce((s,kv)=>s+Math.pow(kv[1]-avg,2),0)/entries.length;const balanced=variance<1.2;return{most,least,gap,balanced};}
+function luckyBy(key){return{Wood:['green','cyan'],Fire:['red','orange'],Earth:['yellow','brown'],Metal:['white','silver','gold'],Water:['black','blue','navy']}[key]||[];}
+function elShort(e){return{Wood:'木',Fire:'火',Earth:'土',Metal:'金',Water:'水'}[e]||e;}
