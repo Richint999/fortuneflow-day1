@@ -1,1 +1,36 @@
-<!-- match.html placeholder content -->
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Partner Match</title><link rel="stylesheet" href="styles.css"></head><body>
+<div class="topbar"><div class="container row"><div class="brand">FortuneFlow</div><nav>
+<a href="index.html">Home</a><a href="report.html">Report</a><a href="match.html" aria-current="page">Partner Match</a><a href="pricing.html">Pricing</a><a href="account.html">Account</a>
+</nav></div></div>
+<div class="container"><h1>Partner Match</h1>
+<section class="card">
+  <div class="grid cols-2">
+    <div><h3>You</h3><div class="grid cols-2">
+      <div><label>Year Stem</label><select id="ay-s"></select></div><div><label>Year Branch</label><select id="ay-b"></select></div>
+      <div><label>Month Stem</label><select id="am-s"></select></div><div><label>Month Branch</label><select id="am-b"></select></div>
+      <div><label>Day Stem</label><select id="ad-s"></select></div><div><label>Day Branch</label><select id="ad-b"></select></div>
+      <div><label>Hour Stem</label><select id="ah-s"></select></div><div><label>Hour Branch</label><select id="ah-b"></select></div>
+    </div></div>
+    <div><h3>Partner</h3><div class="grid cols-2">
+      <div><label>Year Stem</label><select id="by-s"></select></div><div><label>Year Branch</label><select id="by-b"></select></div>
+      <div><label>Month Stem</label><select id="bm-s"></select></div><div><label>Month Branch</label><select id="bm-b"></select></div>
+      <div><label>Day Stem</label><select id="bd-s"></select></div><div><label>Day Branch</label><select id="bd-b"></select></div>
+      <div><label>Hour Stem</label><select id="bh-s"></select></div><div><label>Hour Branch</label><select id="bh-b"></select></div>
+    </div></div>
+  </div>
+  <div style="margin-top:12px"><button id="calc">Calculate Score</button></div>
+  <div id="score" style="margin-top:14px;font-size:22px;font-weight:800"></div>
+  <div id="explain" class="small" style="margin-top:8px"></div>
+</section></div>
+<script src="utils.js"></script>
+<script>
+const SIX_HARM=new Set(['子午','丑未','寅申','卯酉','辰戌','巳亥']);
+const SIX_COMB=new Set(['子丑','寅亥','卯戌','辰酉','巳申','午未']);
+const TR=[new Set(['申','子','辰']),new Set(['寅','午','戌']),new Set(['亥','卯','未']),new Set(['巳','酉','丑'])];
+const eStem=i=>STEMS[i].e, brZh=i=>BR[i].zh, rel=(a,b)=>{const o=['Wood','Fire','Earth','Metal','Water'];const ai=o.indexOf(a),bi=o.indexOf(b);if((ai+1)%5===bi)return 1;if((ai+4)%5===bi)return -1;return 0;}
+function build(p){['y','m','d','h'].forEach(q=>{const s=document.getElementById(p+q+'-s');s.innerHTML='';STEMS.forEach((o,i)=>{const op=document.createElement('option');op.value=i;op.textContent=o.zh;s.appendChild(op);});const b=document.getElementById(p+q+'-b');b.innerHTML='';BR.forEach((o,i)=>{const op=document.createElement('option');op.value=i;op.textContent=o.zh;b.appendChild(op);});});}
+function counts(p){const g=id=>parseInt(document.getElementById(p+id).value,10);return total([tally(g('y-s'),g('y-b')),tally(g('m-s'),g('m-b')),tally(g('d-s'),g('d-b')),tally(g('h-s'),g('h-b'))]);}
+function score(A,B,det){const da=dom(A),db=dom(B);let comp=0;if(da.least===db.most)comp+=22;if(db.least===da.most)comp+=10;if((B[da.least]||0)-(A[da.least]||0)>=2)comp+=8;const U={};E.forEach(k=>U[k]=(A[k]||0)+(B[k]||0));const v=E.map(k=>U[k]||0),avg=v.reduce((a,b)=>a+b,0)/v.length;const s=v.reduce((x,y)=>x+Math.pow(y-avg,2),0)/v.length;const balance=Math.max(0,25*(1/(1+s)));let pair=brZh(det.a.db)+brZh(det.b.db),rev=pair.split('').reverse().join(''),r=0;if(SIX_COMB.has(pair)||SIX_COMB.has(rev))r+=12;TR.forEach(set=>{if(set.has(brZh(det.a.db))&&set.has(brZh(det.b.db)))r+=5;});const stemRel=rel(eStem(det.a.ds),eStem(det.b.ds));const stemScore=stemRel===1?8:stemRel===-1?-6:2;let totalScore=Math.round(Math.max(0,Math.min(100,comp+balance+r+stemScore)));return{total:totalScore,detail:{comp,balance:Math.round(balance),r,stemScore},domA:da,domB:db};}
+document.addEventListener('DOMContentLoaded',()=>{build('a');build('b');document.getElementById('calc').addEventListener('click',()=>{const g=(p,i)=>parseInt(document.getElementById(p+i).value,10);const A=counts('a'),B=counts('b');const det={a:{ds:g('a','d-s'),db:g('a','d-b')},b:{ds:g('b','d-s'),db:g('b','d-b')}};const r=score(A,B,det);const label=r.total>=85?'Excellent':r.total>=70?'Good':r.total>=50?'Neutral':'Challenging';document.getElementById('score').textContent='Score: '+r.total+' / 100 — '+label;const bullets=[];bullets.push('You lack: '+r.domA.least+' | Partner strong in: '+r.domB.most);bullets.push('Shared balance bonus: '+r.detail.balance);if(r.detail.r>=12)bullets.push('Heavenly combination sign — long-term harmony potential');else if(r.detail.r>=6)bullets.push('Six-harmony sign — good flow & chemistry');bullets.push('Day stem relation bonus: '+r.detail.stemScore);document.getElementById('explain').innerHTML=bullets.map(x=>'• '+x).join('<br>');});});
+</script></body></html>
