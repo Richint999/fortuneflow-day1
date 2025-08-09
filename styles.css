@@ -1,15 +1,1 @@
-:root{--bg:#0b1324;--panel:#0f1a32;--text:#e6eefc;--muted:#a7b3c9;--line:#203052;--btn:#1e2f57;--btn2:#355a9a;--accent:#ffd34e}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
-a{color:#9cc3ff;text-decoration:none}a.button,button{display:inline-flex;align-items:center;gap:8px;background:var(--btn);color:#fff;padding:10px 14px;border-radius:12px;border:1px solid var(--line);cursor:pointer}
-a.button:hover,button:hover{filter:brightness(1.06)}.container{max-width:1100px;margin:24px auto;padding:0 16px}
-.topbar{position:sticky;top:0;z-index:50;background:rgba(11,19,36,.92);backdrop-filter:saturate(180%) blur(6px);border-bottom:1px solid var(--line)}
-.topbar .row{display:flex;align-items:center;justify-content:space-between;padding:10px 0}.brand{font-weight:800;letter-spacing:.2px}
-nav a{margin:0 8px;padding:8px 4px;border-radius:8px}nav a:hover{background:rgba(255,255,255,.06)}
-section.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;margin:18px 0}
-.grid{display:grid;gap:16px}.grid.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}.grid.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
-label{display:block;margin-bottom:6px;color:#d2e0ff;font-size:14px}select,input{width:100%;padding:10px;border-radius:10px;border:1px solid var(--line);background:#0b1020;color:var(--text)}
-.small{font-size:13px;color:var(--muted)}.kv{display:flex;gap:8px;flex-wrap:wrap}.tag{background:#203052;border:1px solid #2a3d63;padding:4px 10px;border-radius:999px}
-h1,h2,h3{margin:8px 0 6px}table{width:100%;border-collapse:collapse;margin-top:8px}th,td{padding:8px;border-bottom:1px dashed var(--line)}th{border-bottom:1px solid var(--line);text-align:left}
-.mono{font-family:ui-monospace,Menlo,Consolas,monospace}.err{color:#b91c1c;background:#3d1212;border:1px solid #5f1b1b;padding:8px;border-radius:10px}
-.lock{filter:blur(2px);opacity:.7;pointer-events:none}.muted{color:var(--muted)}.print-only{display:none}
-@media print{body{background:#fff;color:#000}.topbar,.no-print{display:none!important}.print-only{display:block}section.card{border:0}a{color:inherit}}
+<!-- styles.css placeholder content -->
