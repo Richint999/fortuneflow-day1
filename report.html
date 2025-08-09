@@ -68,11 +68,78 @@ function renderReportTable(counts){
 function isPaid(){ try{ const subs=JSON.parse(localStorage.getItem('ff_subs')||'[]'); if(Array.isArray(subs)&&subs.length>0) return true; }catch(e){} return !!localStorage.getItem('ff_last_plan'); }
 function topElement(counts){ return Object.entries(counts).sort((a,b)=>b[1]-a[1])[0][0]; }
 function lowElement(counts){ return Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(-1)[0][0]; }
-const CAREERS={Wood:['Education','Healthcare','Publishing','Non-profit','Design (sustainable)'],Fire:['Marketing','Entertainment','Culinary','Sales','Public speaking'],Earth:['Operations','Real estate','HR','Supply chain','Project management'],Metal:['Finance','Law','Engineering','Quality control','Data governance'],Water:['Tech R&D','Consulting','Logistics','Trading','Research/analysis']};
-const CAUTION={Wood:['Speculative trading','High-risk sales'],Fire:['Back-office repetitive work','Isolation roles'],Earth:['Constant travel gigs','Unstructured startups'],Metal:['Unregulated ventures','Ambiguous ownership'],Water:['Rigid bureaucracy','Over-controlled environments']};
-const STRENGTHS={Wood:['Growth mindset','Empathy','Planning'],Fire:['Visibility','Momentum','Storytelling'],Earth:['Reliability','Patience','Execution'],Metal:['Discipline','Standards','Precision'],Water:['Strategy','Adaptability','Insight']};
-const RISKS={Wood:['Over-committing','People-pleasing'],Fire:['Burnout','Impulsiveness'],Earth:['Over-cautious','Stagnation'],Metal:['Rigidity','Perfectionism'],Water:['Indecision','Over-analysis']};
-function luckyBy(key){ const map={Wood:['green','cyan'], Fire:['red','orange'], Earth:['yellow','brown'], Metal:['white','silver','gold'], Water:['black','blue','navy']}; return map[key]||[]; }
+
+const CAREERS = {
+  Wood:  ["Education","Healthcare","Publishing","Non‑profit","Sustainable design","Humanities","Counseling"],
+  Fire:  ["Marketing","Entertainment","Culinary","Sales","Public speaking","PR","Events"],
+  Earth: ["Operations","Real estate","HR","Agriculture","Supply chain","Project management","Construction"],
+  Metal: ["Finance","Law","Engineering","Manufacturing","Quality control","Compliance","Data governance"],
+  Water: ["Tech R&D","Consulting","Logistics","Trading","Research/analysis","Maritime","Freight"]
+};
+const CAUTION = {
+  Wood:  ["Highly speculative trading","Cut‑throat sales w/ no support"],
+  Fire:  ["Back‑office repetitive work","Long isolation roles"],
+  Earth: ["Constant travel gigs","Unstructured early‑stage chaos"],
+  Metal: ["Unregulated ventures","Ambiguous ownership/responsibility"],
+  Water: ["Rigid bureaucracy","Over‑controlled environments"]
+};
+const STRENGTHS = {
+  Wood:["Growth mindset","Empathy","Planning","Mentoring"],
+  Fire:["Visibility","Momentum","Storytelling","Inspiring others"],
+  Earth:["Reliability","Patience","Execution","Stability"],
+  Metal:["Discipline","Standards","Precision","Integrity"],
+  Water:["Strategy","Adaptability","Insight","Learning speed"]
+};
+const RISKS = {
+  Wood:["Over‑committing","People‑pleasing","Boundary blurring"],
+  Fire:["Burnout","Impulsiveness","Attention diffusion"],
+  Earth:["Over‑cautious","Stagnation","Slow to pivot"],
+  Metal:["Rigidity","Perfectionism","Harsh self‑critique"],
+  Water:["Indecision","Over‑analysis","Detached communication"]
+};
+        
+function luckyBy(key){ const map={Wood:['green','cyan'], Fire:['red','orange'], Earth:['yellow','brown'], Metal:['white','silver','gold'], Water:['black','blue','navy']}
+
+function dominance(counts){
+  const entries = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+  const most = entries[0][0], least = entries[entries.length-1][0];
+  const gap = entries[0][1] - entries[entries.length-1][1];
+  const avg = entries.reduce((s,kv)=>s+kv[1],0)/entries.length;
+  const variance = entries.reduce((s,kv)=>s + Math.pow(kv[1]-avg,2), 0)/entries.length;
+  const balanced = variance < 1.2; // heuristic: smaller variance => balanced chart
+  return {most, least, gap, balanced};
+}
+function dynamicActions(dom){
+  const tips = [];
+  // Generic balance guidance
+  if(dom.balanced){
+    tips.push("You’re relatively balanced — double down on your strongest edge for visible wins.");
+  } else {
+    tips.push("Rebalance first: add small daily habits that favor your weakest element.");
+  }
+  // By weakest element
+  const weak = dom.least;
+  const add = (t)=>tips.push(t);
+  if(weak==='Wood'){ add("Schedule weekly learning/mentoring to grow your pipeline of ideas."); add("Say no to low‑leverage tasks to keep energy focused."); }
+  if(weak==='Fire'){ add("Increase outward exposure: present, post, or pitch once this week."); add("Use warm colors/accessories to raise visibility and confidence."); }
+  if(weak==='Earth'){ add("Create a simple routine and review checklist; protect deep‑work blocks."); add("Group similar tasks to build momentum and reduce switching."); }
+  if(weak==='Metal'){ add("Define ‘done’ with clear standards before starting; write your acceptance criteria."); add("Automate one repetitive task to enforce consistency."); }
+  if(weak==='Water'){ add("Do a 30‑minute strategy session before major decisions."); add("Prototype quickly and seek feedback to avoid over‑analysis."); }
+  // By dominance gap (how uneven)
+  if(dom.gap >= 3){ tips.push("Big gap detected — keep decisions simple and cadence weekly to avoid swings."); }
+  return tips.slice(0,5);
+}
+function dynamicCareer(most){
+  return (CAREERS[most]||[]).slice(0,6);
+}
+function dynamicCaution(least){
+  return (CAUTION[least]||[]).slice(0,4);
+}
+function dynamicStrengthsRisks(most,least){
+  return { s:(STRENGTHS[most]||[]).slice(0,4), r:(RISKS[least]||[]).slice(0,4) };
+}
+
+; return map[key]||[]; }
 function tag(containerId, arr){ const host=document.getElementById(containerId); host.innerHTML=''; arr.forEach(t=>{ const span=document.createElement('span'); span.className='tag'; span.textContent=t; host.appendChild(span); }); }
 document.addEventListener('DOMContentLoaded',()=>{
   const data = JSON.parse(localStorage.getItem('ff_result_en')||'null');
