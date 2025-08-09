@@ -1,0 +1,227 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Partner Match</title>
+  <style>
+    :root{--bg:#0b1324;--panel:#0f1a32;--txt:#e6eefc;--muted:#a7b3c9;--line:#203052;--btn:#1e2f57}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font-family:system-ui}
+    a{color:#9cc3ff;text-decoration:none}
+    .button,button{display:inline-flex;align-items:center;background:var(--btn);color:#fff;padding:10px 14px;border-radius:12px;border:1px solid var(--line);cursor:pointer}
+    .container{max-width:900px;margin:24px auto;padding:0 16px}
+    .topbar{background:rgba(11,19,36,.92);border-bottom:1px solid var(--line)}
+    .topbar .row{display:flex;justify-content:space-between;align-items:center;padding:10px 0}.brand{font-weight:800}
+    nav a{margin:0 8px;padding:8px;border-radius:10px}nav a:hover{background:rgba(255,255,255,.06)}
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;margin:16px 0}
+    .grid{display:grid;gap:14px}.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    label{display:block;margin-bottom:6px;font-size:14px;color:#d2e0ff}select,input{width:100%;padding:10px;border-radius:10px;border:1px solid var(--line);background:#0b1020;color:#e6eefc}
+    .small{font-size:13px;color:#a7b3c9}
+    .err{color:#b91c1c;background:#3d1212;border:1px solid #5f1b1b;padding:8px;border-radius:10px;margin-bottom:10px;display:none}
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="container row">
+      <div class="brand">FortuneFlow</div>
+      <nav>
+        <a href="../index.html">Know Yourself</a>
+        <a href="../report.html">Report</a>
+        <a href="../pricing.html">Pricing</a>
+        <a href="../account.html">Account</a>
+      </nav>
+    </div>
+  </div>
+
+  <div class="container">
+    <h1>Partner Match</h1>
+    <section class="card">
+      <div id="err" class="err"></div>
+      <div class="grid cols-2">
+        <div>
+          <h3>You</h3>
+          <div class="grid cols-2">
+            <div><label>Country</label>
+              <select id="a-country">
+                <option value="CN" selected>China</option><option value="US">United States</option><option value="CA">Canada</option>
+                <option value="UK">United Kingdom</option><option value="AU">Australia</option><option value="DE">Germany</option>
+                <option value="FR">France</option><option value="ES">Spain</option>
+              </select>
+            </div>
+            <div><label>Hour (optional)</label>
+              <select id="a-hour">
+                <option value="">Unknown</option>
+                <option value="1">01:00</option><option value="3">03:00</option><option value="5">05:00</option><option value="7">07:00</option>
+                <option value="9">09:00</option><option value="11">11:00</option><option value="13">13:00</option><option value="15">15:00</option>
+                <option value="17">17:00</option><option value="19">19:00</option><option value="21">21:00</option><option value="23">23:00</option>
+              </select>
+            </div>
+            <div><label>Year</label><input id="a-y" type="number" min="1900" max="2100" placeholder="1988"></div>
+            <div><label>Month</label><input id="a-m" type="number" min="1" max="12" placeholder="7"></div>
+            <div><label>Day</label><input id="a-d" type="number" min="1" max="31" placeholder="15"></div>
+          </div>
+        </div>
+        <div>
+          <h3>Partner</h3>
+          <div class="grid cols-2">
+            <div><label>Country</label>
+              <select id="b-country">
+                <option value="CN" selected>China</option><option value="US">United States</option><option value="CA">Canada</option>
+                <option value="UK">United Kingdom</option><option value="AU">Australia</option><option value="DE">Germany</option>
+                <option value="FR">France</option><option value="ES">Spain</option>
+              </select>
+            </div>
+            <div><label>Hour (optional)</label>
+              <select id="b-hour">
+                <option value="">Unknown</option>
+                <option value="1">01:00</option><option value="3">03:00</option><option value="5">05:00</option><option value="7">07:00</option>
+                <option value="9">09:00</option><option value="11">11:00</option><option value="13">13:00</option><option value="15">15:00</option>
+                <option value="17">17:00</option><option value="19">19:00</option><option value="21">21:00</option><option value="23">23:00</option>
+              </select>
+            </div>
+            <div><label>Year</label><input id="b-y" type="number" min="1900" max="2100" placeholder="1990"></div>
+            <div><label>Month</label><input id="b-m" type="number" min="1" max="12" placeholder="8"></div>
+            <div><label>Day</label><input id="b-d" type="number" min="1" max="31" placeholder="20"></div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:12px"><button id="calc">Calculate Score</button></div>
+      <div id="score" style="margin-top:14px;font-size:22px;font-weight:800"></div>
+      <div id="explain" class="small" style="margin-top:8px"></div>
+    </section>
+
+    <section class="card small">
+      <b>Note</b>: We use local civil date; hour optional. Country is for future time‑zone refinement.
+    </section>
+  </div>
+
+  <!-- Inline, self-contained JS (no external dependencies) -->
+  <script>
+  const E=['Wood','Fire','Earth','Metal','Water'];
+  const STEMS=[{zh:'甲',e:'Wood'},{zh:'乙',e:'Wood'},{zh:'丙',e:'Fire'},{zh:'丁',e:'Fire'},{zh:'戊',e:'Earth'},{zh:'己',e:'Earth'},{zh:'庚',e:'Metal'},{zh:'辛',e:'Metal'},{zh:'壬',e:'Water'},{zh:'癸',e:'Water'}];
+  const BR=[{zh:'子',e:['Water']},{zh:'丑',e:['Earth','Water','Metal']},{zh:'寅',e:['Wood','Fire','Earth']},{zh:'卯',e:['Wood']},{zh:'辰',e:['Earth','Wood','Water']},{zh:'巳',e:['Fire','Metal','Earth']},{zh:'午',e:['Fire','Earth']},{zh:'未',e:['Earth','Wood','Fire']},{zh:'申',e:['Metal','Water','Earth']},{zh:'酉',e:['Metal']},{zh:'戌',e:['Earth','Fire','Metal']},{zh:'亥',e:['Water','Wood']}];
+  const mod=(n,m)=>((n%m)+m)%m;
+  function tally(s,b){const c={Wood:0,Fire:0,Earth:0,Metal:0,Water:0};c[STEMS[s].e]++;BR[b].e.forEach(x=>c[x]++);return c}
+  function total(arr){const t={Wood:0,Fire:0,Earth:0,Metal:0,Water:0};arr.forEach(c=>E.forEach(k=>t[k]+=c[k]||0));return t}
+  function dom(counts){
+    const items=Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+    const most=items[0][0], least=items[items.length-1][0];
+    const avg=items.reduce((s,v)=>s+v[1],0)/items.length;
+    const v=items.reduce((s,v)=>s+Math.pow(v[1]-avg,2),0)/items.length;
+    return {most,least,balanced:v<1.2};
+  }
+  function julianDayNumber(y,m,d){
+    const a=Math.floor((14-m)/12);
+    const y2=y+4800-a, m2=m+12*a-3;
+    return d+Math.floor((153*m2+2)/5)+365*y2+Math.floor(y2/4)-Math.floor(y2/100)+Math.floor(y2/400)-32045;
+  }
+  function sexagenaryDay(y,m,d){ const j=julianDayNumber(y,m,d); const idx=mod(j+49,60); return [idx%10, idx%12]; }
+  function lichunAdjustedYear(dateUTC){
+    const y=dateUTC.getUTCFullYear(), m=dateUTC.getUTCMonth(), d=dateUTC.getUTCDate();
+    if(m<1) return y-1; if(m===1 && d<4) return y-1; return y;
+  }
+  function sexagenaryYear(y){ return [mod((y-4),10), mod((y-4),12)]; }
+  function monthPillar(yStem,dateUTC){
+    const m=dateUTC.getUTCMonth(), d=dateUTC.getUTCDate();
+    const S={1:4,2:6,3:5,4:6,5:6,6:7,7:8,8:8,9:8,10:7,11:7,12:6};
+    let k=0;
+    if(m===1)k=(d>=S[1])?1:12; else if(m===2)k=(d>=S[2])?2:1; else if(m===3)k=(d>=S[3])?3:2; else if(m===4)k=(d>=S[4])?4:3;
+    else if(m===5)k=(d>=S[5])?5:4; else if(m===6)k=(d>=S[6])?6:5; else if(m===7)k=(d>=S[7])?7:6; else if(m===8)k=(d>=S[8])?8:7;
+    else if(m===9)k=(d>=S[9])?9:8; else if(m===10)k=(d>=S[10])?10:9; else if(m===11)k=(d>=S[11])?11:10; else if(m===0)k=(d>=S[12])?12:11;
+    const branchIdx=mod(2+(k-1),12);
+    const start={0:2,5:2,1:4,6:4,2:6,7:6,3:8,8:8,4:0,9:0}[yStem];
+    const stemIdx=mod(start+(k-1),10);
+    return [stemIdx,branchIdx];
+  }
+  function hourBranchIndex(h){ return Math.floor(mod(h,24)/2); }
+  function hourPillar(dayStemIdx,h){
+    const hb=hourBranchIndex(h);
+    const stemStart=[0,2,4,6,8,0,2,4,6,8][dayStemIdx];
+    const hs=mod(stemStart+hb,10);
+    return [hs,hb];
+  }
+  const SIX_HARM=new Set(['子午','丑未','寅申','卯酉','辰戌','巳亥']);
+  const SIX_COMB=new Set(['子丑','寅亥','卯戌','辰酉','巳申','午未']);
+  const TR=[new Set(['申','子','辰']),new Set(['寅','午','戌']),new Set(['亥','卯','未']),new Set(['巳','酉','丑'])];
+  const eStem=i=>STEMS[i].e, brZh=i=>BR[i].zh;
+  function cycleRel(a,b){
+    const o=['Wood','Fire','Earth','Metal','Water'];
+    const ai=o.indexOf(a),bi=o.indexOf(b);
+    if((ai+1)%5===bi) return 1;
+    if((ai+4)%5===bi) return -1;
+    return 0;
+  }
+  function buildPillars(y,m,d,hrOpt){
+    const dP=sexagenaryDay(y,m,d);
+    const dt=new Date(Date.UTC(y,m-1,d));
+    const yAdj=lichunAdjustedYear(dt);
+    const yP=sexagenaryYear(yAdj);
+    const mP=monthPillar(yP[0],dt);
+    let hP=null;
+    if(hrOpt!=='' && hrOpt!=null){
+      const hr=parseInt(hrOpt,10);
+      if(Number.isFinite(hr)) hP=hourPillar(dP[0],hr);
+    }
+    return { y:yP, m:mP, d:dP, h:hP };
+  }
+  function countsFromPillars(P){
+    const packs=[{s:P.y[0],b:P.y[1]},{s:P.m[0],b:P.m[1]},{s:P.d[0],b:P.d[1]}];
+    if(P.h) packs.push({s:P.h[0],b:P.h[1]});
+    return total(packs.map(x=>tally(x.s,x.b)));
+  }
+  function score(A,B,det){
+    const da=dom(A), db=dom(B);
+    let comp=0;
+    if(da.least===db.most) comp+=22;
+    if(db.least===da.most) comp+=10;
+    if((B[da.least]||0)-(A[da.least]||0)>=2) comp+=8;
+    const union={}; E.forEach(k=>union[k]=(A[k]||0)+(B[k]||0));
+    const vals=E.map(k=>union[k]||0);
+    const avg=vals.reduce((a,b)=>a+b,0)/vals.length;
+    const v=vals.reduce((s,x)=>s+Math.pow(x-avg,2),0)/vals.length;
+    const balance=Math.max(0,25*(1/(1+v)));
+    let pair=brZh(det.a.db)+brZh(det.b.db), rev=pair.split('').reverse().join('');
+    let rel=0;
+    if(SIX_COMB.has(pair)||SIX_COMB.has(rev)) rel+=12;
+    if(SIX_HARM.has(pair)||SIX_HARM.has(rev)) rel+=6;
+    TR.forEach(s=>{ if(s.has(brZh(det.a.db)) && s.has(brZh(det.b.db))) rel+=5; });
+    const stemRel=cycleRel(eStem(det.a.ds),eStem(det.b.ds));
+    const stemScore=stemRel===1?8:stemRel===-1?-6:2;
+    const totalScore=Math.round(Math.max(0,Math.min(100,comp+balance+rel+stemScore)));
+    return { total: totalScore, detail:{comp, balance:Math.round(balance), rel, stemScore}, domA:da, domB:db };
+  }
+  // Page wiring
+  const setErr=m=>{const e=document.getElementById('err');e.textContent=m;e.style.display='block';}
+  const clearErr=()=>{const e=document.getElementById('err');e.textContent='';e.style.display='none';}
+  document.addEventListener('DOMContentLoaded',()=>{
+    document.getElementById('calc').addEventListener('click',()=>{
+      clearErr();
+      const ay=parseInt(document.getElementById('a-y').value,10);
+      const am=parseInt(document.getElementById('a-m').value,10);
+      const ad=parseInt(document.getElementById('a-d').value,10);
+      const ah=document.getElementById('a-hour').value;
+      const by=parseInt(document.getElementById('b-y').value,10);
+      const bm=parseInt(document.getElementById('b-m').value,10);
+      const bd=parseInt(document.getElementById('b-d').value,10);
+      const bh=document.getElementById('b-hour').value;
+      if(!(ay&&am&&ad&&by&&bm&&bd)){ setErr('Please fill Year/Month/Day for both sides.'); return; }
+      try{
+        const A=buildPillars(ay,am,ad,ah), B=buildPillars(by,bm,bd,bh);
+        const Ac=countsFromPillars(A), Bc=countsFromPillars(B);
+        const det={a:{ds:A.d[0],db:A.d[1]}, b:{ds:B.d[0],db:B.d[1]}};
+        const r=score(Ac,Bc,det);
+        const label=r.total>=85?'Excellent':r.total>=70?'Good':r.total>=50?'Neutral':'Challenging';
+        document.getElementById('score').textContent='Score: '+r.total+' / 100 — '+label;
+        const bullets=[];
+        bullets.push('You lack: '+r.domA.least+' | Partner strong: '+r.domB.most);
+        bullets.push('Balance bonus: '+r.detail.balance);
+        if(r.detail.rel>=12) bullets.push('Heavenly combination — long-term harmony');
+        else if(r.detail.rel>=6) bullets.push('Six-harmony — good chemistry');
+        bullets.push('Day-stem relation: '+r.detail.stemScore);
+        document.getElementById('explain').innerHTML=bullets.map(x=>'• '+x).join('<br>');
+      }catch(err){ setErr(err.message||String(err)); }
+    });
+  });
+  </script>
+</body>
+</html>
