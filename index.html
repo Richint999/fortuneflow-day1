@@ -1,4 +1,5 @@
-<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'><title>FortuneFlow — BaZi & Five Elements</title><link rel='stylesheet' href='styles.css'></head><body><div class="topbar no-print">
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FortuneFlow — BaZi & Five Elements</title><link rel="stylesheet" href="styles.css"></head><body><div class="topbar no-print">
   <div class="container row">
     <div class="brand">FortuneFlow</div>
     <nav>
@@ -6,32 +7,27 @@
       <a href="pricing.html">Pricing</a>
       <a href="account.html">Account</a>
       <a href="report.html">Report</a>
-      <label>🌐</label>
-      <select id="lang" style="padding:6px 10px;border-radius:8px;border:1px solid #2a3d63">
-        <option value="zh">中文</option>
-        <option value="en" selected>English</option>
-        <option value="es">Español</option>
-      </select>
     </nav>
   </div>
-</div><div class="container"><h1 id="title-text">FortuneFlow — BaZi & Five Elements</h1>
+</div>
+<div class="container">
+  <h1>FortuneFlow — BaZi & Five Elements</h1>
   <section class="card">
-    <h2 id="i_auto_four">Auto Four Pillars</h2>
-    <p id="i_tip">Select country, date, time. We'll fill the four pillars for you. Then results will be calculated automatically.</p>
+    <h2>Auto Four Pillars</h2>
+    <p>Select country, date, time. We'll fill the four pillars for you. Then results will be calculated automatically.</p>
     <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-      <label id="i_country_label" for="ff-country">Country</label><select id="ff-country"></select>
-      <label id="i_date_label" for="ff-date">Birth Date</label><input id="ff-date" type="date">
-      <label id="i_time_label" for="ff-time">Birth Time</label><input id="ff-time" type="time" value="12:00">
-      <label style="margin-left:8px"><input type="checkbox" id="ff-tst"> <span id="i_tst">True Solar Time</span></label>
-      <label style="margin-left:8px" id="i_lon_label">Longitude°</label><input id="ff-lon" type="number" step="0.1" placeholder="116.4" style="width:120px">
+      <label for="ff-country">Country</label><select id="ff-country"></select>
+      <label for="ff-date">Birth Date</label><input id="ff-date" type="date">
+      <label for="ff-time">Birth Time</label><input id="ff-time" type="time" value="12:00">
+      <label style="margin-left:8px"><input type="checkbox" id="ff-tst"> True Solar Time</label>
+      <label style="margin-left:8px">Longitude°</label><input id="ff-lon" type="number" step="0.1" placeholder="116.4" style="width:120px">
       <input id="ff-offset" type="hidden" value="0">
-      <button id="ff-autofill"><span id="i_autofill">Auto-Fill</span></button>
+      <button id="ff-autofill">Auto-Fill</button>
     </div>
     <div id="ff-error" class="err"></div>
     <div id="ff-tst-time" style="margin-top:8px;color:#ffd34e"></div>
     <div id="ff-disp" class="mono" style="margin-top:8px"></div>
   </section>
-
   <section class="card">
     <h2>BaZi → Five Elements (Demo)</h2>
     <div class="grid cols-2">
@@ -52,69 +48,39 @@
         </div>
       </div>
       <div>
-        <pre id="result-json" class="mono" style="min-height:140px;background:#0b1020;border:1px solid #203052;border-radius:10px;padding:10px"></pre>
+        <div id="result-host"></div>
         <div id="advice" style="margin-top:10px"></div>
         <div id="five-bars"></div>
       </div>
     </div>
-  </section></div><script>
-const I18N={en:{title:"FortuneFlow — BaZi & Five Elements",auto_four:"Auto Four Pillars",tip:"Select country, date, time. We'll fill the four pillars for you. Then results will be calculated automatically.",country:"Country",birth_date:"Birth Date",birth_time:"Birth Time",tst:"True Solar Time",lon:"Longitude°",autofill:"Auto-Fill",err_date:"Please select your birth date.",tst_show:"True Solar Time",pricing:"Pricing",basic:"Basic",pro:"Pro",vip:"VIP",buy:"Buy Now",month:"/month",features:"Features",includes:"Includes",checkout:"Checkout",name:"Full Name",email:"Email",submit:"Submit",thanks:"Thank you! We'll contact you shortly.",report:"Report",download:"Download / Print",backhome:"Back to Home",pillars:"Pillars",elements:"Five Elements",lucky:"Lucky Colors",strongest:"Strongest",weakest:"Weakest"},
-zh:{title:"FortuneFlow — 八字与五行",auto_four:"自动排四柱",tip:"选择国家、出生日期和时间，我们会自动计算四柱，并输出结果。",country:"国家",birth_date:"出生日期",birth_time:"出生时间",tst:"真太阳时",lon:"经度°",autofill:"一键生成",err_date:"请先选择出生日期。",tst_show:"真太阳时",pricing:"价格",basic:"基础版",pro:"专业版",vip:"旗舰版",buy:"立即购买",month:"/月",features:"功能",includes:"包含",checkout:"结账",name:"姓名",email:"邮箱",submit:"提交",thanks:"感谢！我们会尽快联系你。",report:"报告",download:"下载/打印",backhome:"返回首页",pillars:"四柱",elements:"五行",lucky:"幸运色",strongest:"最旺",weakest:"最弱"},
-es:{title:"FortuneFlow — BaZi y Cinco Elementos",auto_four:"Cuatro Pilares Automáticos",tip:"Selecciona país, fecha y hora. Completaremos los cuatro pilares y calcularemos los resultados automáticamente.",country:"País",birth_date:"Fecha de nacimiento",birth_time:"Hora de nacimiento",tst:"Hora Solar Verdadera",lon:"Longitud°",autofill:"Auto-Rellenar",err_date:"Por favor, selecciona tu fecha de nacimiento.",tst_show:"Hora Solar Verdadera",pricing:"Precios",basic:"Básico",pro:"Pro",vip:"VIP",buy:"Comprar",month:"/mes",features:"Funciones",includes:"Incluye",checkout:"Pagar",name:"Nombre Completo",email:"Correo",submit:"Enviar",thanks:"¡Gracias! Nos pondremos en contacto pronto.",report:"Informe",download:"Descargar / Imprimir",backhome:"Volver al inicio",pillars:"Pilares",elements:"Cinco Elementos",lucky:"Colores de la Suerte",strongest:"Más fuerte",weakest:"Más débil"}};
-function detectLang(){try{const s=localStorage.getItem('ff_lang');if(s)return s;const n=(navigator.languages&&navigator.languages[0])||navigator.language||'en';if(n.toLowerCase().startsWith('zh'))return 'zh';if(n.toLowerCase().startsWith('es'))return 'es';return 'en';}catch(e){return 'en';}}
-function setLang(l){localStorage.setItem('ff_lang',l);applyLang(l);}
-function applyLang(l){const t=I18N[l]||I18N.en;document.title=t.title;const set=(id,key)=>{const e=document.getElementById(id);if(e&&t[key])e.textContent=t[key];};set('title-text','title');set('i_auto_four','auto_four');set('i_tip','tip');set('i_country_label','country');set('i_date_label','birth_date');set('i_time_label','birth_time');set('i_tst','tst');set('i_lon_label','lon');set('i_autofill','autofill');const sel=document.getElementById('lang');if(sel&&sel.value!==l)sel.value=l;}
-document.addEventListener('DOMContentLoaded',function(){const l=detectLang();applyLang(l);const sel=document.getElementById('lang');if(sel){sel.value=l;sel.addEventListener('change',()=>setLang(sel.value));}});
-</script><script>
-const COUNTRY_TIME=[["China (+08:00)",480,480,false,"N"],["USA - Los Angeles (-480/-420)",-480,-420,true,"N"],["USA - New York (-300/-240)",-300,-240,true,"N"],["Canada - Toronto (-300/-240)",-300,-240,true,"N"],["Hong Kong (+08:00)",480,480,false,"N"],["Taiwan (+08:00)",480,480,false,"N"],["Japan (+09:00)",540,540,false,"N"],["South Korea (+09:00)",540,540,false,"N"],["Mexico City (-360)",-360,-360,false,"N"],["Spain (+60/+120)",60,120,true,"N"]];
-function populateCountrySelect(id){const sel=document.getElementById(id);sel.innerHTML="";COUNTRY_TIME.forEach((r,i)=>{const o=document.createElement('option');o.value=i;o.textContent=r[0];sel.appendChild(o);});}
-function inferOffset(idx,dateStr){const r=COUNTRY_TIME[idx];if(!r)return 0;const std=r[1],dst=r[2],has=r[3],hem=r[4];if(!has||!dateStr)return std;const a=dateStr.split('-');const m=parseInt(a[1]||'1',10),d=parseInt(a[2]||'1',10);const mmdd=m*100+d;return hem==="N"?((mmdd>=401&&mmdd<=1031)?dst:std):(((mmdd>=1101&&mmdd<=1231)||(mmdd>=101&&mmdd<=331))?dst:std);}
+  </section>
+</div>
+<script>
+const COUNTRY_TIME=[["China (+08:00)",480,480,false,"N"],["USA - Los Angeles (-480/-420)",-480,-420,true,"N"],["USA - New York (-300/-240)",-300,-240,true,"N"],["Canada - Toronto (-300/-240)",-300,-240,true,"N"],["Hong Kong (+08:00)",480,480,false,"N"],["Taiwan (+08:00)",480,480,false,"N"],["Japan (+09:00)",540,540,false,"N"],["South Korea (+09:00)",540,540,false,"N"],["Mexico City (-360)",-360,-360,false,"N"],["Spain (+60/+120)",60,120,true,"N"],["United Kingdom (0/+60)",0,60,true,"N"],["Germany (+60/+120)",60,120,true,"N"],["France (+60/+120)",60,120,true,"N"],["Italy (+60/+120)",60,120,true,"N"],["Netherlands (+60/+120)",60,120,true,"N"],["Greece (+120/+180)",120,180,true,"N"],["UAE (+240)",240,240,false,"N"],["Australia - Sydney (+10/+11)",600,660,true,"S"],["New Zealand - Wellington (+12/+13)",720,780,true,"S"]];
+function populateCountry(){ const el=document.getElementById('ff-country'); if(!el) return; el.innerHTML=''; COUNTRY_TIME.forEach((r,i)=>{ const o=document.createElement('option'); o.value=i; o.textContent=r[0]; el.appendChild(o); }); if(el.options.length>0) el.selectedIndex=0; }
+function inferOffset(idx, dateStr){ const r=COUNTRY_TIME[idx]; if(!r) return 0; const std=r[1], dst=r[2], has=r[3], hem=r[4]; if(!has || !dateStr){ return std; } const a=dateStr.split('-'); const m=parseInt(a[1]||'1',10), d=parseInt(a[2]||'1',10); const mmdd=m*100+d; if(hem==='N'){ return (mmdd>=401 && mmdd<=1031) ? dst : std; } else { return ((mmdd>=1101&&mmdd<=1231)||(mmdd>=101&&mmdd<=331))?dst:std; } }
 const STEMS_ZH=["甲","乙","丙","丁","戊","己","庚","辛","壬","癸"]; const BRANCHES_ZH=["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
-function mod(n,m){return((n%m)+m)%m;} function lichunAdjustedYear(d){const y=d.getUTCFullYear(),m=d.getUTCMonth(),da=d.getUTCDate();if(m<1)return y-1;if(m===1&&da<4)return y-1;return y;}
-function sexagenaryYear(y){return[mod((y-4),10),mod((y-4),12)];}
-function monthPillar(ys,d){const m=d.getUTCMonth(),da=d.getUTCDate();const S={1:4,2:6,3:5,4:6,5:6,6:7,7:8,8:8,9:8,10:7,11:7,12:6};let k=0;if(m===1)k=(da>=S[1])?1:12;else if(m===2)k=(da>=S[2])?2:1;else if(m===3)k=(da>=S[3])?3:2;else if(m===4)k=(da>=S[4])?4:3;else if(m===5)k=(da>=S[5])?5:4;else if(m===6)k=(da>=S[6])?6:5;else if(m===7)k=(da>=S[7])?7:6;else if(m===8)k=(da>=S[8])?8:7;else if(m===9)k=(da>=S[9])?9:8;else if(m===10)k=(da>=S[10])?10:9;else if(m===11)k=(da>=S[11])?11:10;else if(m===0)k=(da>=S[12])?12:11;const b=mod(2+(k-1),12);const start={0:2,5:2,1:4,6:4,2:6,7:6,3:8,8:8,4:0,9:0}[ys];const s=mod(start+(k-1),10);return[s,b];}
-function julianDayNumber(y,m,d){const a=Math.floor((14-m)/12);const y2=y+4800-a;const m2=m+12*a-3;return d+Math.floor((153*m2+2)/5)+365*y2+Math.floor(y2/4)-Math.floor(y2/100)+Math.floor(y2/400)-32045;}
-function sexagenaryDay(y,m,d){const j=julianDayNumber(y,m,d);const idx=mod(j+49,60);return[idx%10,idx%12];}
-function hourBranchIndex(h){return Math.floor(((h+1)%24)/2);} function hourStemIndex(ds,hb){const start={0:0,5:0,1:2,6:2,2:4,7:4,3:6,8:6,4:8,9:8}[ds];return mod(start+hb,10);}
-function parseOffsetMinutes(raw){if(raw==null)return 0;const s=String(raw).trim();if(s==="")return 0;const m=s.match(/^([+-]?)(\d{1,2})(?::?(\d{2}))?$/);if(m){const sign=m[1]==="-"?-1:1;const hh=parseInt(m[2]||"0",10);const mm=parseInt(m[3]||"0",10);if(hh<=24)return sign*(hh*60+mm);}const n=Number(s);if(!isNaN(n)){if(Math.abs(n)<=24)return Math.round(n*60);return Math.round(n);}throw new Error("Invalid UTC offset");}
-function dayOfYearUTC(date){const start=Date.UTC(date.getUTCFullYear(),0,1);return Math.floor((date.getTime()-start)/(1000*60*60*24))+1;}
-function equationOfTimeMinutes(doy){const B=2*Math.PI*(doy-81)/364.0;return 9.87*Math.sin(2*B)-7.53*Math.cos(B)-1.5*Math.sin(B);}
-function standardMeridianDeg(off){return(off/60)*15;}
-function adjustHourByTST(hr,min,lon,off,utcDate){const std=standardMeridianDeg(off);const delta=4*(lon-std)+equationOfTimeMinutes(dayOfYearUTC(utcDate));const total=hr*60+min+delta;let m=((total%1440)+1440)%1440;return{hour:Math.floor(m/60),minute:Math.round(m%60)};}
-function autoFourPillarsFromInput(dateStr,timeStr,offStr){if(!dateStr)throw new Error("Missing date");const a=dateStr.split('-');const y=parseInt(a[0],10),m=parseInt(a[1],10),d=parseInt(a[2],10);let hr=12,min=0;if(timeStr){const p=timeStr.split(':');hr=parseInt(p[0]||'12',10);min=parseInt(p[1]||'0',10);}const off=parseOffsetMinutes(offStr);const local=new Date(Date.UTC(y,(m-1),d,hr,min));const utc=new Date(local.getTime()-off*60*1000);const yAdj=lichunAdjustedYear(utc);const yP=sexagenaryYear(yAdj);const mP=monthPillar(yP[0],utc);const dP=sexagenaryDay(utc.getUTCFullYear(),utc.getUTCMonth()+1,utc.getUTCDate());let hFor=hr;const tst=document.getElementById('ff-tst')?.checked;const lon=parseFloat((document.getElementById('ff-lon')?.value||'').trim());if(tst&&!isNaN(lon)){const adj=adjustHourByTST(hr,min,lon,off,utc);hFor=adj.hour;const l=document.getElementById('ff-tst-time');if(l){const tt=(I18N[detectLang()]||I18N.en).tst_show;l.textContent=tt+': '+String(adj.hour).padStart(2,'0')+':'+String(adj.minute).padStart(2,'0');}}else{const l=document.getElementById('ff-tst-time');if(l)l.textContent='';}const hb=hourBranchIndex(hFor);const hs=hourStemIndex(dP[0],hb);return{year:{stemIdx:yP[0],branchIdx:yP[1]},month:{stemIdx:mP[0],branchIdx:mP[1]},day:{stemIdx:dP[0],branchIdx:dP[1]},hour:{stemIdx:hs,branchIdx:hb}};}
-const ELEMENTS=["Wood","Fire","Earth","Metal","Water"];
-const STEMS_DATA=[{zh:"甲",e:"Wood"},{zh:"乙",e:"Wood"},{zh:"丙",e:"Fire"},{zh:"丁",e:"Fire"},{zh:"戊",e:"Earth"},{zh:"己",e:"Earth"},{zh:"庚",e:"Metal"},{zh:"辛",e:"Metal"},{zh:"壬",e:"Water"},{zh:"癸",e:"Water"}];
-const BRANCHES_DATA=[{zh:"子",e:["Water"]},{zh:"丑",e:["Earth","Water","Metal"]},{zh:"寅",e:["Wood","Fire","Earth"]},{zh:"卯",e:["Wood"]},{zh:"辰",e:["Earth","Wood","Water"]},{zh:"巳",e:["Fire","Metal","Earth"]},{zh:"午",e:["Fire","Earth"]},{zh:"未",e:["Earth","Wood","Fire"]},{zh:"申",e:["Metal","Water","Earth"]},{zh:"酉",e:["Metal"]},{zh:"戌",e:["Earth","Fire","Metal"]},{zh:"亥",e:["Water","Wood"]}];
-function buildSelect(options,id){const sel=document.getElementById(id);sel.innerHTML="";options.forEach((o,i)=>{const opt=document.createElement('option');opt.value=i;opt.textContent=o.zh;sel.appendChild(opt);});}
-function tally(si,bi){const c={Wood:0,Fire:0,Earth:0,Metal:0,Water:0};c[STEMS_DATA[si].e]+=1;BRANCHES_DATA[bi].e.forEach(e=>c[e]+=1);return c;}
-function totalCounts(arr){const t={Wood:0,Fire:0,Earth:0,Metal:0,Water:0};arr.forEach(c=>ELEMENTS.forEach(e=>t[e]+=c[e]));return t;}
-function luckyBy(e){const map={Wood:["green","cyan"],Fire:["red","orange"],Earth:["yellow","brown"],Metal:["white","silver","gold"],Water:["black","blue","navy"]};return map[e]||[];}
-function renderBars(counts){const c=document.getElementById('five-bars');if(!c)return;c.innerHTML='';ELEMENTS.forEach(e=>{const bar=document.createElement('div');bar.className='bar';const v=counts[e];bar.style.height=(10+v*22)+'px';const label=document.createElement('span');label.textContent=`${e} ${v}`;bar.appendChild(label);c.appendChild(bar);});}
-function calcAndShow(){const ids=['year','month','day','hour'];const arr=ids.map(p=>{const s=parseInt(document.getElementById(p+'-stem').value,10);const b=parseInt(document.getElementById(p+'-branch').value,10);return tally(s,b);});const t=totalCounts(arr);renderBars(t);const order=Object.entries(t).sort((a,b)=>b[1]-a[1]);const most=order[0][0],least=order[4][0];const lucky=luckyBy(least);localStorage.setItem('ff_result',JSON.stringify({counts:t,most,least,lucky}));const adv=document.getElementById('advice');if(adv){const tt=I18N[detectLang()]||I18N.en;adv.innerHTML=`<b>${tt.strongest}:</b> ${most}<br/><b>${tt.weakest}:</b> ${least}<br/><b>${tt.lucky}:</b> ${lucky.join(", ")||"—"}`;}
-}
-</script><script>
-document.addEventListener('DOMContentLoaded',function(){
-  ['year','month','day','hour'].forEach(p=>{buildSelect(STEMS_DATA,p+'-stem');buildSelect(BRANCHES_DATA,p+'-branch');});
-  document.getElementById('calc-btn')?.addEventListener('click',calcAndShow);
-  populateCountrySelect('ff-country');
-  function sync(){const idx=parseInt(document.getElementById('ff-country').value||'0',10);const d=(document.getElementById('ff-date').value||'');document.getElementById('ff-offset').value=String(inferOffset(idx,d));}
-  document.getElementById('ff-country').addEventListener('change',sync);
-  document.getElementById('ff-date').addEventListener('change',sync); sync();
-  document.getElementById('ff-autofill').addEventListener('click',function(){
-    const err=document.getElementById('ff-error'); err.style.display='none';
-    const ds=(document.getElementById('ff-date').value||'').trim();
-    const ts=(document.getElementById('ff-time').value||'').trim();
-    const os=(document.getElementById('ff-offset').value||'0').trim();
-    if(!ds){err.textContent=(I18N[detectLang()]||I18N.en).err_date;err.style.display='block';return;}
-    try{
-      const p=autoFourPillarsFromInput(ds,ts,os);
-      const map={year:'year',month:'month',day:'day',hour:'hour'};
-      Object.keys(map).forEach(k=>{const s=document.getElementById(map[k]+'-stem');const b=document.getElementById(map[k]+'-branch');s.value=String(p[k].stemIdx);b.value=String(p[k].branchIdx);});
-      const S=STEMS_ZH,B=BRANCHES_ZH;const fmt=q=>S[q.stemIdx]+B[q.branchIdx];
-      document.getElementById('ff-disp').innerHTML=`<div class="mono" style="padding:10px;border:1px solid #eee;border-radius:8px"><b>Pillars:</b> ${fmt(p.year)} ${fmt(p.month)} ${fmt(p.day)} ${fmt(p.hour)}</div>`;
-      calcAndShow();
-      document.getElementById('five-bars')?.scrollIntoView({behavior:'smooth',block:'center'});
-    }catch(e){err.textContent=e.message||'Error';err.style.display='block';console.error(e);}
-  });
-});
-</script></body></html>
+function mod(n,m){return((n%m)+m)%m;} function lichunAdjustedYear(date){ const y=date.getUTCFullYear(),m=date.getUTCMonth(),d=date.getUTCDate(); if(m<1)return y-1; if(m===1&&d<4)return y-1; return y; }
+function sexagenaryYear(y){ return [mod((y-4),10), mod((y-4),12)]; }
+function monthPillar(yStem,date){ const m=date.getUTCMonth(), d=date.getUTCDate(); const S={1:4,2:6,3:5,4:6,5:6,6:7,7:8,8:8,9:8,10:7,11:7,12:6}; let k=0; if(m===1)k=(d>=S[1])?1:12; else if(m===2)k=(d>=S[2])?2:1; else if(m===3)k=(d>=S[3])?3:2; else if(m===4)k=(d>=S[4])?4:3; else if(m===5)k=(d>=S[5])?5:4; else if(m===6)k=(d>=S[6])?6:5; else if(m===7)k=(d>=S[7])?7:6; else if(m===8)k=(d>=S[8])?8:7; else if(m===9)k=(d>=S[9])?9:8; else if(m===10)k=(d>=S[10])?10:9; else if(m===11)k=(d>=S[11])?11:10; else if(m===0)k=(d>=S[12])?12:11; const branchIdx=mod(2+(k-1),12); const start={0:2,5:2, 1:4,6:4, 2:6,7:6, 3:8,8:8, 4:0,9:0}[yStem]; const stemIdx=mod(start+(k-1),10); return [stemIdx, branchIdx]; }
+function julianDayNumber(y,m,d){ const a=Math.floor((14-m)/12); const y2=y+4800-a; const m2=m+12*a-3; return d+Math.floor((153*m2+2)/5)+365*y2+Math.floor(y2/4)-Math.floor(y2/100)+Math.floor(y2/400)-32045; }
+function sexagenaryDay(y,m,d){ const j=julianDayNumber(y,m,d); const idx=mod(j+49,60); return [idx%10,idx%12]; }
+function hourBranchIndex(h){ return Math.floor(((h+1)%24)/2); } function hourStemIndex(dayStem,hb){ const start={0:0,5:0,1:2,6:2,2:4,7:4,3:6,8:6,4:8,9:8}[dayStem]; return mod(start+hb,10); }
+function parseOffsetMinutes(raw){ if(raw==null) return 0; const s=String(raw).trim(); if(s==='') return 0; const m=s.match(/^([+-]?)?(\d{1,2})(?::?(\d{2}))?$/); if(m){ const sign=(m[1]||'')==='-'?-1:1; const hh=parseInt(m[2]||'0',10); const mm=parseInt(m[3]||'0',10); if(hh<=24) return sign*(hh*60+mm); } const n=Number(s); if(!isNaN(n)){ if(Math.abs(n)<=24) return Math.round(n*60); return Math.round(n); } throw new Error('Invalid UTC offset'); }
+function dayOfYearUTC(date){ const start=Date.UTC(date.getUTCFullYear(),0,1); return Math.floor((date.getTime()-start)/(1000*60*60*24))+1; }
+function equationOfTimeMinutes(doy){ const B=2*Math.PI*(doy-81)/364.0; return 9.87*Math.sin(2*B)-7.53*Math.cos(B)-1.5*Math.sin(B); }
+function standardMeridianDeg(off){ return (off/60)*15; }
+function adjustHourByTST(hr,min,lon,off,utcDate){ const std=standardMeridianDeg(off); const delta=4*(lon-std)+equationOfTimeMinutes(dayOfYearUTC(utcDate)); const total=hr*60+min+delta; let m=((total%1440)+1440)%1440; return {hour:Math.floor(m/60), minute:Math.round(m%60)}; }
+function autoFourPillarsFromInput(dateStr, timeStr, offStr){ if(!dateStr) throw new Error('Please select your birth date.'); const a=dateStr.split('-'); const y=parseInt(a[0],10), m=parseInt(a[1],10), d=parseInt(a[2],10); let hr=12, min=0; if(timeStr){ const p=timeStr.split(':'); hr=parseInt(p[0]||'12',10); min=parseInt(p[1]||'0',10); } const off = parseOffsetMinutes(offStr); const localWall = new Date(Date.UTC(y,(m-1),d,hr,min)); const utcDate = new Date(localWall.getTime() - off*60*1000); const yAdj = lichunAdjustedYear(utcDate); const yP=sexagenaryYear(yAdj); const mP=monthPillar(yP[0], utcDate); const dP=sexagenaryDay(utcDate.getUTCFullYear(), utcDate.getUTCMonth()+1, utcDate.getUTCDate()); let hourForBranch = hr; const tst=document.getElementById('ff-tst')?.checked; const lon=parseFloat((document.getElementById('ff-lon')?.value||'').trim()); if(tst && !isNaN(lon)){ const adj=adjustHourByTST(hr,min,lon,off,utcDate); hourForBranch=adj.hour; const label=document.getElementById('ff-tst-time'); if(label){ label.textContent='True Solar Time: '+String(adj.hour).padStart(2,'0')+':'+String(adj.minute).padStart(2,'0'); } } else { const label=document.getElementById('ff-tst-time'); if(label) label.textContent=''; } const hb=hourBranchIndex(hourForBranch); const hs=hourStemIndex(dP[0],hb); return {year:{stemIdx:yP[0],branchIdx:yP[1]}, month:{stemIdx:mP[0],branchIdx:mP[1]}, day:{stemIdx:dP[0],branchIdx:dP[1]}, hour:{stemIdx:hs,branchIdx:hb}}; }
+const ELEMENT_KEYS=['Wood','Fire','Earth','Metal','Water'];
+const STEMS_DATA=[{zh:'甲', e:'Wood'},{zh:'乙', e:'Wood'},{zh:'丙', e:'Fire'},{zh:'丁', e:'Fire'},{zh:'戊', e:'Earth'},{zh:'己', e:'Earth'},{zh:'庚', e:'Metal'},{zh:'辛', e:'Metal'},{zh:'壬', e:'Water'},{zh:'癸', e:'Water'}];
+const BRANCHES_DATA=[{zh:'子', e:['Water']},{zh:'丑', e:['Earth','Water','Metal']},{zh:'寅', e:['Wood','Fire','Earth']},{zh:'卯', e:['Wood']},{zh:'辰', e:['Earth','Wood','Water']},{zh:'巳', e:['Fire','Metal','Earth']},{zh:'午', e:['Fire','Earth']},{zh:'未', e:['Earth','Wood','Fire']},{zh:'申', e:['Metal','Water','Earth']},{zh:'酉', e:['Metal']},{zh:'戌', e:['Earth','Fire','Metal']},{zh:'亥', e:['Water','Wood']}];
+function buildSelect(options,id){ const sel=document.getElementById(id); sel.innerHTML=''; options.forEach((o,i)=>{ const opt=document.createElement('option'); opt.value=i; opt.textContent=o.zh; sel.appendChild(opt); }); }
+function tally(si,bi){ const c={Wood:0,Fire:0,Earth:0,Metal:0,Water:0}; c[STEMS_DATA[si].e]+=1; BRANCHES_DATA[bi].e.forEach(e=>c[e]+=1); return c; }
+function totalCounts(arr){ const t={Wood:0,Fire:0,Earth:0,Metal:0,Water:0}; arr.forEach(c=>ELEMENT_KEYS.forEach(k=>t[k]+=c[k]||0)); return t; }
+function luckyBy(e){ const map={Wood:['green','cyan'],Fire:['red','orange'],Earth:['yellow','brown'],Metal:['white','silver','gold'],Water:['black','blue','navy']}; return (map[e]||[]); }
+function renderBars(counts){ const c=document.getElementById('five-bars'); if(!c)return; c.innerHTML=''; ELEMENT_KEYS.forEach(key=>{ const bar=document.createElement('div'); bar.className='bar'; const v=counts[key]; bar.style.height=(10+v*22)+'px'; const label=document.createElement('span'); label.textContent=key+' '+v; bar.appendChild(label); c.appendChild(bar); }); }
+function renderTable(counts){ const table=document.createElement('table'); table.innerHTML='<thead><tr><th>Five Elements</th><th style="text-align:right">#</th></tr></thead>'; const tbody=document.createElement('tbody'); ELEMENT_KEYS.forEach(k=>{ const tr=document.createElement('tr'); tr.innerHTML='<td>'+k+'</td><td style="text-align:right">'+(counts[k]||0)+'</td>'; tbody.appendChild(tr); }); table.appendChild(tbody); const host=document.getElementById('result-host'); if(host){ host.innerHTML=''; host.appendChild(table); } }
+function calculateAndShow(){ const ids=['year','month','day','hour']; const arr=ids.map(p=>{ const s=parseInt(document.getElementById(p+'-stem').value,10); const b=parseInt(document.getElementById(p+'-branch').value,10); return tally(s,b); }); const t=totalCounts(arr); renderBars(t); renderTable(t); const order=Object.entries(t).sort((a,b)=>b[1]-a[1]); const most=order[0][0], least=order[4][0]; const lucky=luckyBy(least); document.getElementById('advice').innerHTML='<b>Strongest:</b> '+most+'<br/><b>Weakest:</b> '+least+'<br/><b>Lucky colors:</b> '+(lucky.join(', ')||'—'); localStorage.setItem('ff_result_en', JSON.stringify({counts:t,most,least,lucky})); }
+document.addEventListener('DOMContentLoaded',function(){ ['year','month','day','hour'].forEach(p=>{buildSelect(STEMS_DATA,p+'-stem');buildSelect(BRANCHES_DATA,p+'-branch');}); document.getElementById('calc-btn').addEventListener('click',calculateAndShow); populateCountry(); function sync(){try{const idx=parseInt(document.getElementById('ff-country').value||'0',10); const d=(document.getElementById('ff-date').value||''); document.getElementById('ff-offset').value=String(inferOffset(idx,d));}catch(e){console.warn('offset fallback',e); document.getElementById('ff-offset').value='0';}} document.getElementById('ff-country').addEventListener('change',sync); document.getElementById('ff-date').addEventListener('change',sync); sync(); document.getElementById('ff-autofill').addEventListener('click',function(){ const err=document.getElementById('ff-error'); err.style.display='none'; const ds=(document.getElementById('ff-date').value||'').trim(); const ts=(document.getElementById('ff-time').value||'').trim(); const os=(document.getElementById('ff-offset').value||'0').trim(); if(!ds){err.textContent='Please select your birth date.'; err.style.display='block'; return;} try{ const p=autoFourPillarsFromInput(ds,ts,os); ['year','month','day','hour'].forEach(id=>{ document.getElementById(id+'-stem').value=String(p[id].stemIdx); document.getElementById(id+'-branch').value=String(p[id].branchIdx);}); const S=STEMS_ZH,B=BRANCHES_ZH; const fmt=q=>S[q.stemIdx]+B[q.branchIdx]; document.getElementById('ff-disp').innerHTML='<div class="mono" style="padding:10px;border:1px solid #eee;border-radius:8px"><div><b>Year:</b> '+fmt(p.year)+'</div><div><b>Month:</b> '+fmt(p.month)+'</div><div><b>Day:</b> '+fmt(p.day)+'</div><div><b>Hour:</b> '+fmt(p.hour)+'</div></div>'; calculateAndShow(); }catch(e){err.textContent=e.message||'Error'; err.style.display='block'; console.error(e);} }); });</script>
+</body></html>
