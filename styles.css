@@ -24,3 +24,135 @@ th,td{padding:6px 8px;border-bottom:1px dashed #2a3d63}
 th{border-bottom:1px solid #2a3d63;text-align:left}
 .print-only{display:none}
 @media print{ body{background:#fff;color:#000} .topbar, .no-print{display:none !important} .print-only{display:block} section.card{border:0} }
+
+
+/* === Unified Intake UI polish === */
+:root{
+  --ff-bg: #0b1220;
+  --ff-card: #121a2a;
+  --ff-muted: #8aa0c2;
+  --ff-text: #e8f0ff;
+  --ff-accent: #4f8cff;
+  --ff-border: rgba(255,255,255,0.08);
+  --ff-shadow: 0 6px 20px rgba(0,0,0,0.25);
+  --ff-radius: 16px;
+  --ff-gap: 14px;
+}
+
+body{ background: var(--ff-bg); color: var(--ff-text); }
+h1,h2{ letter-spacing:.2px }
+.container{ max-width: 1080px; margin: 0 auto; padding: 18px; }
+
+.card{
+  background: var(--ff-card);
+  border: 1px solid var(--ff-border);
+  border-radius: var(--ff-radius);
+  box-shadow: var(--ff-shadow);
+  padding: 18px;
+}
+
+.grid{ display:grid; gap: var(--ff-gap); }
+.grid-2{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (max-width: 860px){ .grid-2{ grid-template-columns: 1fr; } }
+
+label{ display:flex; flex-direction:column; gap:6px; font-size:14px; color: var(--ff-muted); }
+input, select, button{
+  font: inherit;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--ff-border);
+  background: rgba(255,255,255,0.05);
+  color: var(--ff-text);
+  outline: none;
+}
+input::placeholder{ color: #a7b7d8; opacity:.7; }
+input:focus, select:focus{ border-color: var(--ff-accent); box-shadow: 0 0 0 3px rgba(79,140,255,0.2); }
+
+.row{ display:flex; align-items:center; }
+.btn{ cursor:pointer; transition: transform .05s ease; }
+.btn:hover{ transform: translateY(-1px); }
+.btn.primary{ background: var(--ff-accent); border-color: transparent; color:white; }
+
+.error{
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: rgba(255,80,80,0.12);
+  color: #ffb3b3;
+  border: 1px solid rgba(255,80,80,0.3);
+  border-radius: 10px;
+}
+
+/* bars */
+.bars{ display:flex; flex-direction:column; gap:8px; margin-top:10px; }
+.bar{ position:relative; height:28px; border-radius: 8px; background: rgba(255,255,255,0.06); display:flex; align-items:center; overflow:hidden; }
+.bar > span{ position:relative; z-index:1; padding:0 10px; font-size:14px; color:var(--ff-text); }
+.bar::before{
+  content:"";
+  position:absolute; inset:0;
+  width: var(--bar-width, 50%);
+  background: linear-gradient(90deg, rgba(79,140,255,.9), rgba(79,140,255,.3));
+}
+/* when we set width inline, prefer that */
+.bar{ background-image:none }
+
+
+/* === Horizontal layout tweaks === */
+.form-inline .form-row{
+  display:flex; align-items:flex-end; gap:12px; flex-wrap:wrap;
+}
+.form-inline label{
+  flex: 1 1 auto;
+  min-width: 180px;
+  max-width: 320px;
+}
+.form-inline label > span{
+  font-size:12px; color:var(--ff-muted); margin-bottom:6px;
+}
+.form-inline input[type="text"],
+.form-inline input[type="date"],
+.form-inline input[type="time"],
+.form-inline input[type="number"],
+.form-inline select{
+  width: 100%;
+}
+.form-inline .row{
+  justify-content:flex-end;
+}
+/* results side-by-side always horizontal until small screens */
+section.grid.grid-2{
+  margin-top: 14px;
+}
+@media(min-width: 900px){
+  section.grid.grid-2{ grid-template-columns: 1fr 1fr; }
+}
+@media(max-width: 899px){
+  section.grid.grid-2{ grid-template-columns: 1fr; }
+}
+
+
+/* === Topbar right-aligned nav + hamburger === */
+.topbar{ position:sticky; top:0; z-index:50; background:rgba(11,18,32,0.8); backdrop-filter: blur(8px); border-bottom:1px solid var(--ff-border); }
+.topbar .container.row{ display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.brand{ font-weight:700; letter-spacing:.4px; }
+.nav-right{ display:flex; gap:14px; align-items:center; }
+.nav-right a{ color: var(--ff-text); text-decoration:none; opacity:.9; padding:8px 10px; border-radius:8px; }
+.nav-right a:hover{ background: rgba(255,255,255,0.08); opacity:1; }
+
+/* hamburger */
+.hamburger{
+  display:none;
+  width:40px; height:40px;
+  border-radius:10px; border:1px solid var(--ff-border);
+  background: rgba(255,255,255,0.05);
+  color: var(--ff-text);
+}
+@media (max-width: 860px){
+  .nav-right{ 
+    position:absolute; right:18px; top:56px;
+    display:none; flex-direction:column; align-items:flex-start;
+    background: var(--ff-card); border:1px solid var(--ff-border);
+    box-shadow: var(--ff-shadow); border-radius:12px; padding:10px; min-width: 180px;
+  }
+  .nav-right.open{ display:flex; }
+  .hamburger{ display:block; }
+}

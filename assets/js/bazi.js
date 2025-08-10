@@ -188,7 +188,7 @@ function parseOffsetMinutes(raw){
 }
 
 
-function autoFourPillarsFromInput(dateStr, timeStr, utcOffsetMinutesRawRaw){
+function autoFourPillarsFromInput(dateStr, timeStr, utcOffsetMinutesRaw){
   if(!dateStr) throw new Error("Missing date");
   const [y,m,d] = dateStr.split("-").map(x=>parseInt(x,10));
   let hr=12, min=0;
