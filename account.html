@@ -39,4 +39,5 @@ function renderTable(rows){
 function loadSubs(){ let rows=[]; try{ rows=JSON.parse(localStorage.getItem('ff_subs')||'[]'); }catch(e){ rows=[]; } renderTable(rows); }
 document.addEventListener('DOMContentLoaded',()=>{ loadSubs(); document.getElementById('clear').addEventListener('click',()=>{ localStorage.removeItem('ff_subs'); loadSubs(); }); });
 </script>
+<script src="/nav-timing.js" defer></script>
 </body></html>
