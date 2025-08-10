@@ -1,0 +1,153 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Timing — Pick Powerful Dates</title>
+  <style>
+    :root{--bg:#0b1324;--panel:#0f1a32;--txt:#e6eefc;--muted:#a7b3c9;--line:#203052;--btn:#1e2f57}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font-family:system-ui}
+    a{color:#9cc3ff;text-decoration:none}
+    .button,button{display:inline-flex;align-items:center;background:var(--btn);color:#fff;padding:10px 14px;border-radius:12px;border:1px solid var(--line);cursor:pointer}
+    .container{max-width:980px;margin:24px auto;padding:0 16px}
+    .topbar{background:rgba(11,19,36,.92);border-bottom:1px solid var(--line)}
+    .topbar .row{display:flex;justify-content:space-between;align-items:center;padding:10px 0}.brand{font-weight:800}
+    nav a{margin:0 8px;padding:8px;border-radius:10px}nav a:hover{background:rgba(255,255,255,.06)}
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;margin:16px 0}
+    .grid{display:grid;gap:14px}.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    label{display:block;margin-bottom:6px;font-size:14px;color:#d2e0ff}select,input{width:100%;padding:10px;border-radius:10px;border:1px solid var(--line);background:#0b1020;color:#e6eefc}
+    .small{font-size:13px;color:#a7b3c9}
+    .err{color:#b91c1c;background:#3d1212;border:1px solid #5f1b1b;padding:8px;border-radius:10px;margin-bottom:10px;display:none}
+    .result{display:grid;gap:10px}.item{border:1px solid var(--line);border-radius:14px;padding:12px;background:#0e1830}
+    .item h4{margin:0 0 6px 0}
+    .pill{display:inline-block;border:1px solid var(--line);border-radius:10px;padding:2px 8px;margin-left:8px;font-size:12px}
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="container row">
+      <div class="brand">FortuneFlow</div>
+      <nav>
+        <a href="../index.html">Know Yourself</a>
+        <a href="../match/">Partner Match</a>
+        <a href="../pricing.html">Pricing</a>
+        <a href="../account.html">Account</a>
+      </nav>
+    </div>
+  </div>
+
+  <div class="container">
+    <h1>Timing — Pick Powerful Dates</h1>
+    <section class="card">
+      <div id="err" class="err"></div>
+      <div class="grid cols-3">
+        <div>
+          <label>Country</label>
+          <select id="country">
+            <option value="CN" selected>China</option><option value="US">United States</option><option value="CA">Canada</option>
+            <option value="UK">United Kingdom</option><option value="AU">Australia</option><option value="DE">Germany</option>
+            <option value="FR">France</option><option value="ES">Spain</option>
+          </select>
+        </div>
+        <div><label>Birth Year</label><input id="y" type="number" min="1900" max="2100" placeholder="1988"></div>
+        <div><label>Birth Month</label><input id="m" type="number" min="1" max="12" placeholder="7"></div>
+        <div><label>Birth Day</label><input id="d" type="number" min="1" max="31" placeholder="15"></div>
+        <div>
+          <label>Birth Hour (optional)</label>
+          <select id="h">
+            <option value="">Unknown</option>
+            <option value="1">01:00</option><option value="3">03:00</option><option value="5">05:00</option><option value="7">07:00</option>
+            <option value="9">09:00</option><option value="11">11:00</option><option value="13">13:00</option><option value="15">15:00</option>
+            <option value="17">17:00</option><option value="19">19:00</option><option value="21">21:00</option><option value="23">23:00</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid cols-2" style="margin-top:10px">
+        <div><label>Start Date</label><input id="start" type="date"></div>
+        <div><label>End Date</label><input id="end" type="date"></div>
+      </div>
+
+      <div style="margin-top:12px;display:flex;gap:10px;align-items:center">
+        <button id="calc">Find Best Dates</button>
+        <span class="small">We use local civil date; hour optional. Country is for future timezone refinement.</span>
+      </div>
+    </section>
+
+    <section class="card">
+      <h3>Top Dates</h3>
+      <div id="list" class="result"></div>
+    </section>
+  </div>
+
+  <script>
+  const E=['Wood','Fire','Earth','Metal','Water'];
+  const STEMS=[{zh:'甲',e:'Wood'},{zh:'乙',e:'Wood'},{zh:'丙',e:'Fire'},{zh:'丁',e:'Fire'},{zh:'戊',e:'Earth'},{zh:'己',e:'Earth'},{zh:'庚',e:'Metal'},{zh:'辛',e:'Metal'},{zh:'壬',e:'Water'},{zh:'癸',e:'Water'}];
+  const BR=[{zh:'子',e:['Water']},{zh:'丑',e:['Earth','Water','Metal']},{zh:'寅',e:['Wood','Fire','Earth']},{zh:'卯',e:['Wood']},{zh:'辰',e:['Earth','Wood','Water']},{zh:'巳',e:['Fire','Metal','Earth']},{zh:'午',e:['Fire','Earth']},{zh:'未',e:['Earth','Wood','Fire']},{zh:'申',e:['Metal','Water','Earth']},{zh:'酉',e:['Metal']},{zh:'戌',e:['Earth','Fire','Metal']},{zh:'亥',e:['Water','Wood']}];
+  const mod=(n,m)=>((n%m)+m)%m;
+  function tally(s,b){const c={Wood:0,Fire:0,Earth:0,Metal:0,Water:0};c[STEMS[s].e]++;BR[b].e.forEach(x=>c[x]++);return c}
+  function total(arr){const t={Wood:0,Fire:0,Earth:0,Metal:0,Water:0};arr.forEach(c=>E.forEach(k=>t[k]+=c[k]||0));return t}
+  function dom(counts){const items=Object.entries(counts).sort((a,b)=>b[1]-a[1]);const most=items[0][0], least=items[items.length-1][0];const avg=items.reduce((s,v)=>s+v[1],0)/items.length;const v=items.reduce((s,v)=>s+Math.pow(v[1]-avg,2),0)/items.length;return {most,least,balanced:v<1.2}}
+  function julianDayNumber(y,m,d){const a=Math.floor((14-m)/12);const y2=y+4800-a, m2=m+12*a-3;return d+Math.floor((153*m2+2)/5)+365*y2+Math.floor(y2/4)-Math.floor(y2/100)+Math.floor(y2/400)-32045;}
+  function sexagenaryDay(y,m,d){ const j=julianDayNumber(y,m,d); const idx=mod(j+49,60); return [idx%10, idx%12]; }
+  function lichunAdjustedYear(dateUTC){const y=dateUTC.getUTCFullYear(),m=dateUTC.getUTCMonth(),d=dateUTC.getUTCDate();if(m<1)return y-1;if(m===1&&d<4)return y-1;return y;}
+  function sexagenaryYear(y){return [mod((y-4),10), mod((y-4),12)];}
+  function monthPillar(yStem,dateUTC){const m=dateUTC.getUTCMonth(),d=dateUTC.getUTCDate();const S={1:4,2:6,3:5,4:6,5:6,6:7,7:8,8:8,9:8,10:7,11:7,12:6};let k=0;
+    if(m===1)k=(d>=S[1])?1:12; else if(m===2)k=(d>=S[2])?2:1; else if(m===3)k=(d>=S[3])?3:2; else if(m===4)k=(d>=S[4])?4:3; else if(m===5)k=(d>=S[5])?5:4; else if(m===6)k=(d>=S[6])?6:5; else if(m===7)k=(d>=S[7])?7:6; else if(m===8)k=(d>=S[8])?8:7; else if(m===9)k=(d>=S[9])?9:8; else if(m===10)k=(d>=S[10])?10:9; else if(m===11)k=(d>=S[11])?11:10; else if(m===0)k=(d>=S[12])?12:11;
+    const branchIdx=mod(2+(k-1),12); const start={0:2,5:2,1:4,6:4,2:6,7:6,3:8,8:8,4:0,9:0}[yStem]; const stemIdx=mod(start+(k-1),10); return [stemIdx,branchIdx];}
+  const SIX_HARM=new Set(['子午','丑未','寅申','卯酉','辰戌','巳亥']),SIX_COMB=new Set(['子丑','寅亥','卯戌','辰酉','巳申','午未']);
+  const TR=[new Set(['申','子','辰']),new Set(['寅','午','戌']),new Set(['亥','卯','未']),new Set(['巳','酉','丑'])];
+  const eStem=i=>STEMS[i].e, brZh=i=>BR[i].zh;
+  function buildPillars(y,m,d){const dP=sexagenaryDay(y,m,d);const dt=new Date(Date.UTC(y,m-1,d));const yAdj=lichunAdjustedYear(dt);const yP=sexagenaryYear(yAdj);const mP=monthPillar(yP[0],dt);return { y:yP, m:mP, d:dP };}
+  function countsFromPillars(P){const packs=[{s:P.y[0],b:P.y[1]},{s:P.m[0],b:P.m[1]},{s:P.d[0],b:P.d[1]}];return total(packs.map(x=>tally(x.s,x.b)));}
+  function dayScore(person, Y,M,D){
+    const dayP = sexagenaryDay(Y,M,D);
+    const dt = new Date(Date.UTC(Y,M-1,D)); const yAdj = lichunAdjustedYear(dt); const yP = sexagenaryYear(yAdj); const mP = monthPillar(yP[0], dt);
+    const dayElem = STEMS[dayP[0]].e; const monthElems = [STEMS[mP[0]].e].concat(BR[mP[1]].e);
+    let s=0, reasons=[];
+    if(dayElem===person.least){ s+=40; reasons.push('Day favors your weak element ('+dayElem+')'); }
+    if(monthElems.includes(person.least)){ s+=20; reasons.push('Month supports your weak element'); }
+    const pbZh = brZh(person.dBranch), dbZh = brZh(dayP[1]); const pair = pbZh+dbZh, rev = dbZh+pbZh;
+    if(SIX_COMB.has(pair)||SIX_COMB.has(rev)){ s+=12; reasons.push('Six-combination harmony'); }
+    else if(SIX_HARM.has(pair)||SIX_HARM.has(rev)){ s+=6; reasons.push('Six-harmony'); }
+    TR.forEach(set=>{ if(set.has(pbZh)&&set.has(dbZh)){ s+=4; reasons.push('Trine support'); } });
+    s = Math.max(0, Math.min(100, Math.round(s)));
+    return {score:s, dayP, mP, reasons};
+  }
+  const setErr=m=>{const e=document.getElementById('err');e.textContent=m;e.style.display='block';}
+  const clearErr=()=>{const e=document.getElementById('err');e.textContent='';e.style.display='none';}
+  function fmtDate(y,m,d){return y+'-'+String(m).padStart(2,'0')+'-'+String(d).padStart(2,'0')}
+  document.addEventListener('DOMContentLoaded',()=>{
+    document.getElementById('calc').addEventListener('click',()=>{
+      clearErr();
+      const y=parseInt(document.getElementById('y').value,10);
+      const m=parseInt(document.getElementById('m').value,10);
+      const d=parseInt(document.getElementById('d').value,10);
+      const sVal=document.getElementById('start').value;
+      const eVal=document.getElementById('end').value;
+      if(!(y&&m&&d&&sVal&&eVal)){ setErr('Please fill Birth Y/M/D and the date range.'); return; }
+      const P = buildPillars(y,m,d), counts = countsFromPillars(P);
+      const a=Object.entries(counts).sort((x,y)=>y[1]-x[1]); const least=a[a.length-1][0]; const person={ least, dBranch:P.d[1] };
+      const start=new Date(sVal+'T00:00:00Z'), end=new Date(eVal+'T00:00:00Z'); if(end<start){ setErr('End Date should be after Start Date.'); return; }
+      const days=[];
+      for(let t=new Date(start); t<=end && days.length<200; t.setUTCDate(t.getUTCDate()+1)){
+        const Y=t.getUTCFullYear(), M=t.getUTCMonth()+1, D=t.getUTCDate();
+        const r=dayScore(person,Y,M,D); days.push({Y,M,D,...r});
+      }
+      days.sort((a,b)=>b.score-a.score);
+      const top=days.slice(0,10);
+      const list=document.getElementById('list'); list.innerHTML='';
+      if(top.length===0){ list.innerHTML='<div class="small">No dates in range.</div>'; return; }
+      for(const it of top){
+        const title = fmtDate(it.Y,it.M,it.D)+' — '+STEMS[it.dayP[0]].zh+BR[it.dayP[1]].zh+' (Day '+STEMS[it.dayP[0]].e+')';
+        const monthTxt = 'Month: '+STEMS[it.mP[0]].zh+BR[it.mP[1]].zh;
+        const reasons = it.reasons.length? it.reasons.map(s=>'• '+s).join('<br>') : '—';
+        const div=document.createElement('div'); div.className='item';
+        div.innerHTML='<h4>'+title+' <span class="pill">Score '+it.score+'</span></h4><div class="small">'+monthTxt+'</div><div class="small" style="margin-top:6px">'+reasons+'</div>';
+        list.appendChild(div);
+      }
+    });
+  });
+  </script>
+</body>
+</html>
