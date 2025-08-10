@@ -156,3 +156,14 @@ section.grid.grid-2{
   .nav-right.open{ display:flex; }
   .hamburger{ display:block; }
 }
+
+
+/* === Softer horizontal layout === */
+.form-inline .form-row{
+  display:flex; flex-wrap:wrap; gap:12px; align-items:flex-end;
+}
+.form-inline label{ min-width: 160px; max-width: 280px; flex: 1 1 200px; }
+.form-inline .row{ flex: 1 1 200px; justify-content:flex-end; }
+@media (max-width: 860px){
+  .form-inline label, .form-inline .row{ flex: 1 1 100%; }
+}

@@ -11,25 +11,53 @@
   function populateCountrySelect(){
     try{
       const sel = $('#ff-country');
-      if(!sel) return; const _C = (window.COUNTRIES || (typeof COUNTRIES!=='undefined'?COUNTRIES:[])); if(!_C.length) return;
+      if(!sel) return;
       sel.innerHTML = "";
-      _C.forEach((c, idx)=>{
+      // placeholder
+      var ph = document.createElement('option');
+      ph.value = ""; ph.textContent = "Select country"; ph.disabled = true; ph.selected = true;
+      sel.appendChild(ph);
+      // candidates
+      const _C = (window.COUNTRIES || (typeof COUNTRIES!=='undefined'?COUNTRIES:[]));
+      const fallback = [
+        { value:'US', label:'United States (auto DST)' },
+        { value:'CN', label:'China (UTC+8)' },
+        { value:'IN', label:'India (UTC+5:30)' }
+      ];
+      const list = Array.isArray(_C) && _C.length ? _C : fallback;
+      list.forEach((c, i)=>{
         const opt = document.createElement('option');
-        opt.value = String(idx);
-        opt.textContent = c.label || c.value;
+        opt.value = String(i);
+        opt.textContent = c.label || c.value || ('Country '+(i+1));
         sel.appendChild(opt);
       });
+      // enable/disable autofill button
+      var btn = document.getElementById('ff-autofill');
+      if(btn){ btn.disabled = !(Array.isArray(_C) && _C.length); }
+    }catch(e){ console.warn(e); }
+  });
     }catch(e){ console.warn(e); }
   }
 
   function inferOffsetFromCountryAndDate(){
     try{
-      const idx = parseInt($('#ff-country').value||'0',10);
+      const sel = $('#ff-country');
       const dateStr = $('#ff-date').value;
+      if(!sel || !dateStr) return;
+      const idx = sel.selectedIndex - 1; // account for placeholder
+      if(idx < 0){ $('#ff-offset').value = '0'; return; }
       if(window.__FF_GEO__ && typeof window.__FF_GEO__.inferOffsetFromCountryAndDate==='function'){
         const off = window.__FF_GEO__.inferOffsetFromCountryAndDate(idx, dateStr);
-        $('#ff-offset').value = String(off||0);
+        $('#ff-offset').value = String((off!=null?off:0));
+      }else{
+        // basic fallback
+        const label = sel.options[sel.selectedIndex].textContent || '';
+        if(/China/i.test(label)) $('#ff-offset').value = '480';
+        else if(/India/i.test(label)) $('#ff-offset').value = '330';
+        else $('#ff-offset').value = '0';
       }
+    }catch(e){ console.warn('offset fallback', e); $('#ff-offset').value = '0'; }
+  }
     }catch(e){ console.warn('offset fallback', e); }
   }
 
@@ -127,7 +155,7 @@
       $('#error-banner').style.display='none';
     }catch(e){
       const err = $('#error-banner');
-      if(err){ err.textContent = e.message || 'Unknown error'; err.style.display='block'; }
+      if(err){ err.textContent = '⚠️ ' + (e.message || 'Unknown error'); err.style.display='block'; err.scrollIntoView({behavior:'smooth', block:'center'}); }
       console.error(e);
     }
   }
