@@ -152,6 +152,40 @@
       $('#num-soul').textContent = N.soulUrgeNumber(name);
       $('#num-pers').textContent = N.personalityNumber(name);
       $('#num-pyear').textContent = N.personalYear(dateStr, new Date());
+$('#num-pyear').textContent = N.personalYear(dateStr, new Date());
+
+// === Report CTA（付费报告引导）===
+const cta = $('#report-cta');
+const btn = $('#btn-report');
+if (cta && btn) {
+  const q = new URLSearchParams({
+    name: ($('#ff-name').value||'').trim(),
+    country: $('#ff-country').value || '',
+    date: dateStr,
+    time: $('#ff-time').value || '12:00',
+    offset: String(utcOffsetMinutes),
+    lon: $('#ff-lon').value || '',
+    tst: $('#ff-tst').checked ? '1' : '0',
+    src: 'calc'
+  }).toString();
+
+  // 如果有实际结账地址，这里改成你的支付链接
+  btn.href = 'report.html?' + q;
+
+  try {
+    localStorage.setItem('ff_last', JSON.stringify({
+      name: ($('#ff-name').value||'').trim(),
+      country: $('#ff-country').value || '',
+      date: dateStr,
+      time: $('#ff-time').value || '12:00',
+      offset: utcOffsetMinutes,
+      lon: $('#ff-lon').value || null,
+      tst: $('#ff-tst').checked ? 1 : 0
+    }));
+  } catch(_) {}
+
+  cta.style.display = 'block';
+}
 
       const live = $('#result-live'); if(live){ live.textContent = `Most ${most}, Life Path ${N.lifePathFromDateStr(dateStr)}`; }
       const err = $('#error-banner'); if(err){ err.style.display='none'; }
