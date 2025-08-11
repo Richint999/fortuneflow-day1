@@ -43,3 +43,6 @@ input::placeholder{color:#a7b7d8;opacity:.8}
 input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,140,255,.25)}
 .btn.primary{background:var(--accent);color:#fff;border-color:transparent}
 .btn.ghost{background:rgba(79,140,255,.14);co
+.cta .cta-row{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.cta .cta-btn{white-space:nowrap}
+@media (max-width:640px){ .cta .cta-row{align-items:flex-start} }
