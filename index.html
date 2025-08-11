@@ -122,5 +122,26 @@
     });
   })();
 </script>
+  <script>
+/* Fallback: ensure country select is visible even if app.js failed to run */
+document.addEventListener('DOMContentLoaded', function(){
+  var sel = document.getElementById('ff-country');
+  if (sel && sel.options.length === 0) {
+    sel.innerHTML =
+      '<option value="" disabled selected>Select country</option>'+
+      '<option value="US">United States (auto DST)</option>'+
+      '<option value="CN">China (UTC+8)</option>'+
+      '<option value="IN">India (UTC+5:30)</option>';
+  }
+  // basic offset fallback when Auto-Fill is clicked
+  var AF = document.getElementById('ff-autofill');
+  if (AF) AF.addEventListener('click', function(e){
+    e.preventDefault();
+    var lab = sel && sel.options[sel.selectedIndex] ? sel.options[sel.selectedIndex].textContent : '';
+    var v = /China/i.test(lab) ? 480 : /India/i.test(lab) ? 330 : 0;
+    var off = document.getElementById('ff-offset'); if (off) off.value = String(v);
+  });
+});
+</script>
 </body>
 </html>
