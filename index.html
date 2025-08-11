@@ -1,129 +1,127 @@
-<!DOCTYPE html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>FortuneFlow — BaZi & Numerology</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Topbar -->
+  <div class="topbar no-print">
+    <div class="container row">
+      <div class="brand">FortuneFlow</div>
+      <nav id="site-nav" class="nav-right">
+        <a href="index.html">Home</a>
+        <a href="pricing.html">Pricing</a>
+        <a href="match.html">Partner Match</a>
+        <a href="timing.html">Timing</a>
+        <a href="account.html">Account</a>
+        <a href="report.html">Report</a>
+      </nav>
+      <button id="nav-toggle" class="hamburger" aria-controls="site-nav" aria-expanded="false">☰</button>
+    </div>
+  </div>
 
-<html><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>FortuneFlow — BaZi &amp; Five Elements</title><link href="styles.css" rel="stylesheet"/></head><div aria-live="polite" id="result-live" style="position:absolute;left:-9999px;height:1px;overflow:hidden;"></div><body><div class="topbar no-print">
-<div class="container row"><div class="brand">FortuneFlow</div>
-<h1>FortuneFlow — Unified Intake</h1>
-<p>Enter your basic info once. We will output <strong>Four Pillars &amp; Five Elements</strong> and <strong>Numerology</strong> side-by-side.</p>
-<section class="card form-inline">
-<h2>Input</h2>
-<div class="form-row">
-<label>
-<span>Full Name (Latin letters)</span>
-<input id="ff-name" placeholder="e.g., WEI XU" type="text"/>
-</label>
-<label>
-<span>Country</span>
-<select id="ff-country"></select>
-</label>
-<label>
-<span>Birth Date</span>
-<input id="ff-date" type="date"/>
-</label>
-<label>
-<span>Birth Time (local)</span>
-<input id="ff-time" step="60" type="time"/>
-</label>
-<label>
-<span>UTC Offset (minutes)</span>
-<input id="ff-offset" type="number" value="0"/>
-<small class="muted">Auto-filled after date/country</small>
-</label>
-<label>
-<span>Longitude (°E positive, °W negative)</span>
-<input id="ff-lon" placeholder="Optional for true solar time" step="0.0001" type="number"/>
-</label>
-<label class="row">
-<input id="ff-tst" type="checkbox"/> <span style="margin-left:8px">Use True Solar Time (TST)</span>
-</label>
-</div>
-<div class="row" style="gap:8px;margin-top:10px">
-<button class="btn" id="ff-autofill">Auto-Fill</button>
-<button class="btn primary" id="calc-btn">Calculate</button>
-</div>
-<div class="error" id="error-banner" role="alert" style="display:none"></div>
-</section>
-<div aria-live="polite" id="result-live" style="position:absolute;left:-9999px;height:1px;overflow:hidden;"></div>
-<section class="grid grid-2">
-<div class="card">
-<h2>Four Pillars &amp; Five Elements</h2>
-<div class="muted" id="pillars-text"></div>
-<div class="bars" id="five-bars"></div>
-<div id="five-table-host"></div>
-<div class="row" style="margin-top:10px">
-<div>Most: <strong id="most-el">—</strong></div>
-<div style="margin-left:16px">Least: <strong id="least-el">—</strong></div>
-<div style="margin-left:16px">Lucky colors: <strong id="lucky-colors">—</strong></div>
-</div>
-</div>
-<div class="card">
-<h2>Numerology</h2>
-<div class="grid grid-2">
-<div>Life Path: <strong id="num-life">—</strong></div>
-<div>Expression: <strong id="num-expr">—</strong></div>
-<div>Soul Urge: <strong id="num-soul">—</strong></div>
-<div>Personality: <strong id="num-pers">—</strong></div>
-<div>Personal Year: <strong id="num-pyear">—</strong></div>
-</div>
-<small class="muted">Numerology uses the birth date and the Latin spelling of your name.</small>
-</div>
-</section>
-<nav class="nav-right"><a href="index.html">Home</a><a href="pricing.html">Pricing</a><a href="account.html">Account</a><a href="report.html">Report</a><a href="match.html">Partner Match</a><a href="timing.html">Timing</a></nav><button aria-controls="site-nav" aria-expanded="false" class="hamburger" id="nav-toggle">☰</button></div>
-</div>
-<div class="container">
-<h1>FortuneFlow — BaZi &amp; Five Elements</h1>
-<section class="card">
-<h2>Auto Four Pillars</h2>
-<p>Select country, date, time. We'll fill the four pillars for you. Then results will be calculated automatically.</p>
-<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-<label for="ff-country">Country</label><select id="ff-country"></select>
-<label for="ff-date">Birth Date</label><input id="ff-date" type="date"/>
-<label for="ff-time">Birth Time</label><input id="ff-time" type="time" value="12:00"/>
-<label style="margin-left:8px"><input id="ff-tst" type="checkbox"/> True Solar Time</label>
-<label style="margin-left:8px">Longitude°</label><input id="ff-lon" placeholder="116.4" step="0.1" style="width:120px" type="number"/>
-<input id="ff-offset" type="hidden" value="0"/>
-<button id="ff-autofill">Auto-Fill</button>
-</div>
-<div class="err" id="ff-error"></div>
-<div id="ff-tst-time" style="margin-top:8px;color:#ffd34e"></div>
-<div class="mono" id="ff-disp" style="margin-top:8px"></div>
-</section>
-<section class="card">
-<h2>BaZi → Five Elements (Demo)</h2>
-<div class="grid cols-2">
-<div>
-<div class="grid cols-2">
-<div><label>Year Stem</label><select id="year-stem"></select></div>
-<div><label>Year Branch</label><select id="year-branch"></select></div>
-<div><label>Month Stem</label><select id="month-stem"></select></div>
-<div><label>Month Branch</label><select id="month-branch"></select></div>
-<div><label>Day Stem</label><select id="day-stem"></select></div>
-<div><label>Day Branch</label><select id="day-branch"></select></div>
-<div><label>Hour Stem</label><select id="hour-stem"></select></div>
-<div><label>Hour Branch</label><select id="hour-branch"></select></div>
-</div>
-<div style="margin-top:10px">
-<button id="calc-btn">Calculate</button>
-<a class="button" href="report.html">Open Report</a>
-</div>
-</div>
-<div>
-<div id="result-host"></div>
-<div id="advice" style="margin-top:10px"></div>
-<div id="five-bars"></div>
-</div>
-</div>
-</section>
-</div>
-<script>
-(function(){
-  var btn = document.getElementById('nav-toggle');
-  var nav = document.getElementById('site-nav');
-  if(!btn || !nav) return;
-  btn.addEventListener('click', function(){
-    var open = nav.classList.toggle('open');
-    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
-  });
-})();
-</script><script defer="" src="/nav-timing.js"></script>
-<script defer="True" src="countries.js"></script><script defer="True" src="assets/js/geo.js"></script><script defer="True" src="assets/js/bazi.js"></script><script defer="True" src="assets/js/numerology.js"></script><script defer="True" src="/nav-timing.js"></script></body></html>
+  <div class="container">
+    <h1>BaZi + Numerology</h1>
+    <p class="muted">Fill once. See <strong>Four Pillars & Five Elements</strong> and <strong>Numerology</strong> side-by-side.</p>
+
+    <!-- Input (Two-row balanced) -->
+    <section class="card form-balanced">
+      <h2 class="section-title">Input</h2>
+
+      <div class="row1">
+        <label><span>Full Name (Latin)</span>
+          <input id="ff-name" type="text" placeholder="e.g., WEI XU">
+        </label>
+
+        <label><span>Country</span>
+          <select id="ff-country"></select>
+        </label>
+
+        <label><span>Birth Date</span>
+          <input id="ff-date" type="date">
+        </label>
+
+        <label><span>Birth Time (local)</span>
+          <input id="ff-time" type="time" step="60">
+        </label>
+      </div>
+
+      <div class="row2">
+        <label><span>UTC Offset (minutes)</span>
+          <input id="ff-offset" type="number" value="0">
+          <small class="muted">Auto-filled after date/country</small>
+        </label>
+
+        <label><span>Longitude (°E positive, °W negative)</span>
+          <input id="ff-lon" type="number" step="0.0001" placeholder="Optional for TST">
+        </label>
+
+        <label class="inline">
+          <input id="ff-tst" type="checkbox">
+          <span>Use True Solar Time (TST)</span>
+        </label>
+
+        <div class="actions">
+          <button id="ff-autofill" class="btn ghost">Auto-Fill</button>
+          <button id="calc-btn" class="btn primary">Calculate</button>
+        </div>
+      </div>
+
+      <div id="error-banner" class="error" role="alert" style="display:none"></div>
+    </section>
+
+    <!-- Results -->
+    <section class="grid grid-2">
+      <div class="card">
+        <h2>Four Pillars & Five Elements</h2>
+        <div id="pillars-text" class="muted"></div>
+        <div id="five-bars" class="bars"></div>
+        <div id="five-table-host"></div>
+        <div class="row smallgap">
+          <div>Most: <strong id="most-el">—</strong></div>
+          <div>Least: <strong id="least-el">—</strong></div>
+          <div>Lucky colors: <strong id="lucky-colors">—</strong></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Numerology</h2>
+        <div class="grid grid-2">
+          <div>Life Path: <strong id="num-life">—</strong></div>
+          <div>Expression: <strong id="num-expr">—</strong></div>
+          <div>Soul Urge: <strong id="num-soul">—</strong></div>
+          <div>Personality: <strong id="num-pers">—</strong></div>
+          <div>Personal Year: <strong id="num-pyear">—</strong></div>
+        </div>
+        <small class="muted">Numerology uses your birth date and Latin spelling of your name.</small>
+      </div>
+    </section>
+  </div>
+
+  <!-- a11y live region -->
+  <div id="result-live" aria-live="polite" style="position:absolute;left:-9999px;height:1px;overflow:hidden;"></div>
+
+  <!-- Scripts -->
+  <script src="countries.js" defer></script>          <!-- 可选 -->
+  <script src="assets/js/geo.js" defer></script>      <!-- 可选 -->
+  <script src="assets/js/bazi.js" defer></script>     <!-- 必需：四柱逻辑 -->
+  <script src="assets/js/numerology.js" defer></script>
+  <script src="assets/js/app.js" defer></script>
+
+  <!-- Hamburger toggle -->
+  <script>
+    (function(){
+      var btn = document.getElementById('nav-toggle');
+      var nav = document.getElementById('site-nav');
+      if(!btn || !nav) return;
+      btn.addEventListener('click', function(){
+        var open = nav.classList.toggle('open');
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+    })();
+  </script>
+</body>
+</html>
