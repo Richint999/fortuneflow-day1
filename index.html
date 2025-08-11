@@ -1,5 +1,7 @@
 <!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>FortuneFlow — BaZi & Five Elements</title><link rel="stylesheet" href="styles.css"></head><body><div class="topbar no-print">
+<title>FortuneFlow — BaZi & Five Elements</title><link rel="stylesheet" href="styles.css">
+<script src="assets/js/countries.min.js" defer></script>
+</head><body><div class="topbar no-print">
   <div class="container row">
     <div class="brand">FortuneFlow</div>
     <nav>
@@ -15,6 +17,17 @@
   <h1>FortuneFlow — BaZi & Five Elements</h1>
   <section class="card">
     <h2>Auto Four Pillars</h2>
+
+<!-- Location Mode Toggle -->
+<div id="ff-locmode" style="margin:.5rem 0 1rem; padding:.5rem; border:1px dashed #e2e2e2; border-radius:8px;">
+  <label style="margin-right:12px;"><input type="radio" name="locmode" value="advanced" checked> Advanced (City/Timezone)</label>
+  <label><input type="radio" name="locmode" value="basic"> Basic (Country)</label>
+  <div id="ff-basic-block" style="display:none; margin-top:.5rem;">
+    <label for="ff-country-basic" style="display:block; margin-bottom:.25rem;">Country (200+)</label>
+    <select id="ff-country-basic" style="min-width:240px;"></select>
+  </div>
+</div>
+
     <p>Select country, date, time. We'll fill the four pillars for you. Then results will be calculated automatically.</p>
     <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
       <label for="ff-country">Country</label><select id="ff-country"></select>
@@ -108,4 +121,62 @@ function renderTable(counts){ const table=document.createElement('table'); table
 function calculateAndShow(){ const ids=['year','month','day','hour']; const arr=ids.map(p=>{ const s=parseInt(document.getElementById(p+'-stem').value,10); const b=parseInt(document.getElementById(p+'-branch').value,10); return tally(s,b); }); const t=totalCounts(arr); renderBars(t); renderTable(t); const order=Object.entries(t).sort((a,b)=>b[1]-a[1]); const most=order[0][0], least=order[4][0]; const lucky=luckyBy(least); document.getElementById('advice').innerHTML='<b>Strongest:</b> '+most+'<br/><b>Weakest:</b> '+least+'<br/><b>Lucky colors:</b> '+(lucky.join(', ')||'—'); localStorage.setItem('ff_result_en', JSON.stringify({counts:t,most,least,lucky})); }
 document.addEventListener('DOMContentLoaded',function(){ ['year','month','day','hour'].forEach(p=>{buildSelect(STEMS_DATA,p+'-stem');buildSelect(BRANCHES_DATA,p+'-branch');}); document.getElementById('calc-btn').addEventListener('click',calculateAndShow); populateCountry(); function sync(){try{const idx=parseInt(document.getElementById('ff-country').value||'0',10); const d=(document.getElementById('ff-date').value||''); document.getElementById('ff-offset').value=String(inferOffset(idx,d));}catch(e){console.warn('offset fallback',e); document.getElementById('ff-offset').value='0';}} document.getElementById('ff-country').addEventListener('change',sync); document.getElementById('ff-date').addEventListener('change',sync); sync(); document.getElementById('ff-autofill').addEventListener('click',function(){ const err=document.getElementById('ff-error'); err.style.display='none'; const ds=(document.getElementById('ff-date').value||'').trim(); const ts=(document.getElementById('ff-time').value||'').trim(); const os=(document.getElementById('ff-offset').value||'0').trim(); if(!ds){err.textContent='Please select your birth date.'; err.style.display='block'; return;} try{ const p=autoFourPillarsFromInput(ds,ts,os); ['year','month','day','hour'].forEach(id=>{ document.getElementById(id+'-stem').value=String(p[id].stemIdx); document.getElementById(id+'-branch').value=String(p[id].branchIdx);}); const S=STEMS_ZH,B=BRANCHES_ZH; const fmt=q=>S[q.stemIdx]+B[q.branchIdx]; document.getElementById('ff-disp').innerHTML='<div class=\"mono\" style=\"padding:10px;border:1px solid #eee;border-radius:8px\"><div><b>Year:</b> '+fmt(p.year)+'</div><div><b>Month:</b> '+fmt(p.month)+'</div><div><b>Day:</b> '+fmt(p.day)+'</div><div><b>Hour:</b> '+fmt(p.hour)+'</div></div>'; calculateAndShow(); }catch(e){err.textContent=e.message||'Error'; err.style.display='block'; console.error(e);} }); });</script>
 <script src="/nav-timing.js" defer></script>
+
+<script>
+(function(){
+  function closestRow(el){
+    var n=el; while(n && n.parentElement){ 
+      if(n.tagName==='DIV' || n.tagName==='SECTION' || (n.className||'').includes('row')) return n;
+      n=n.parentElement;
+    }
+    return el.parentElement||el;
+  }
+  function showAdvanced(on){
+    var advSel = document.getElementById('ff-country');
+    if(advSel){
+      var row = closestRow(advSel);
+      if(row) row.style.display = on ? '' : 'none';
+    }
+    document.getElementById('ff-basic-block').style.display = on ? 'none' : '';
+    localStorage.setItem('ff_locmode', on ? 'advanced' : 'basic');
+  }
+  function fillCountries(){
+    var sel = document.getElementById('ff-country-basic');
+    if(!sel || !window.FF_COUNTRIES) return;
+    sel.innerHTML='';
+    FF_COUNTRIES.forEach(function(name){
+      var o = document.createElement('option');
+      o.value = name; o.textContent = name; sel.appendChild(o);
+    });
+    var saved = localStorage.getItem('ff_country_basic') || 'China';
+    if([].some.call(sel.options, opt=>opt.value===saved)){ sel.value = saved; }
+  }
+  function wireToggle(){
+    var radios = document.querySelectorAll('input[name="locmode"]');
+    radios.forEach(function(r){ r.addEventListener('change', function(){
+      showAdvanced(this.value==='advanced');
+    }); });
+    var mode = localStorage.getItem('ff_locmode') || 'advanced';
+    var r = document.querySelector('input[name="locmode"][value="'+mode+'"]');
+    if(r){ r.checked = true; showAdvanced(mode==='advanced'); }
+  }
+  document.addEventListener('DOMContentLoaded', function(){
+    fillCountries();
+    wireToggle();
+  });
+
+  document.addEventListener('DOMContentLoaded', function(){
+    var btn = document.getElementById('calc-btn');
+    if(!btn) return;
+    btn.addEventListener('click', function(){
+      var mode = localStorage.getItem('ff_locmode') || 'advanced';
+      if(mode==='basic'){
+        var v = (document.getElementById('ff-country-basic')||{}).value || '';
+        if(v) localStorage.setItem('ff_country_basic', v);
+      }
+    }, {capture:true});
+  });
+})();
+</script>
+
 </body></html>

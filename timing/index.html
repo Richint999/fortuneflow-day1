@@ -43,11 +43,7 @@
       <div class="grid cols-3">
         <div>
           <label>Country</label>
-          <select id="country">
-            <option value="CN" selected>China</option><option value="US">United States</option><option value="CA">Canada</option>
-            <option value="UK">United Kingdom</option><option value="AU">Australia</option><option value="DE">Germany</option>
-            <option value="FR">France</option><option value="ES">Spain</option>
-          </select>
+          <select id="country"></select>
         </div>
         <div><label>Birth Year</label><input id="y" type="number" min="1900" max="2100" placeholder="1988"></div>
         <div><label>Birth Month</label><input id="m" type="number" min="1" max="12" placeholder="7"></div>
@@ -149,5 +145,16 @@
     });
   });
   </script>
-</body>
-</html>
+
+<script src="../assets/js/countries.min.js" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  var sel=document.getElementById('country'); if(!sel||!window.FF_COUNTRIES) return;
+  sel.innerHTML=''; FF_COUNTRIES.forEach(function(name){
+    var o=document.createElement('option'); o.value=name; o.textContent=name; sel.appendChild(o);
+  });
+  sel.value='China';
+});
+</script>
+
+</body></html>
