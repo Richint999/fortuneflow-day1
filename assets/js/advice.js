@@ -1,189 +1,147 @@
 
-// FortuneFlow Advice (Health, Love, Career, Wealth) based on Five Elements
-// Injects into report page if ff_result_en exists in localStorage
+// FortuneFlow Advice -> renders into #actions (replaces Action Tips) based on Five Elements
 (function(){
-  const GEN = { Wood:"Fire", Fire:"Earth", Earth:"Metal", Metal:"Water", Water:"Wood" };   // 相生
-  const KE  = { Wood:"Earth", Earth:"Water", Water:"Fire", Fire:"Metal", Metal:"Wood" };   // 相克
+  const GEN = { Wood:"Fire", Fire:"Earth", Earth:"Metal", Metal:"Water", Water:"Wood" };   // Generating cycle
+  const KE  = { Wood:"Earth", Earth:"Water", Water:"Fire", Fire:"Metal", Metal:"Wood" };   // Controlling cycle
   const ORDER = ["Wood","Fire","Earth","Metal","Water"];
 
   const ORGANS = {
-    Wood: {zh:"肝胆", tips:[
-      "作息规律，尽量在23:00前入睡，保护肝胆代谢",
-      "每日做肩颈和髋屈伸拉伸，舒筋活络",
-      "饮食多选深绿色蔬菜、适量酸味（如柠檬、山楂），少油炸与烈酒"
+    Wood:  {en:"Liver & Gallbladder", tips:[
+      "Keep a consistent sleep schedule (ideally sleep before 11pm).",
+      "Daily mobility: neck/shoulder and hip flexor stretches to release tension.",
+      "Favor dark-green vegetables and a bit of sour taste (lemon, hawthorn). Go easy on deep-fried food and hard liquor."
     ]},
-    Fire: {zh:"心小肠", tips:[
-      "限制晚间咖啡因与高糖，减轻心脏负担",
-      "每天10–20分钟有氧（步行、骑行、游泳）+ 呼吸训练",
-      "情绪起伏大时先暂停沟通，先降温再表达"
+    Fire:  {en:"Heart & Small Intestine", tips:[
+      "Limit late-night caffeine and sugar to reduce cardiac load.",
+      "10–20 minutes of daily cardio (walk, cycle, swim) + simple breath training.",
+      "When emotions surge, pause first—cool down, then communicate."
     ]},
-    Earth:{zh:"脾胃", tips:[
-      "偏温热、少生冷，规律三餐，晚餐不过饱",
-      "核心与腿部力量训练，每周2–3次",
-      "减少精制糖与过度零食，关注餐后困倦"
+    Earth: {en:"Spleen & Stomach", tips:[
+      "Prefer warm foods, less raw/cold. Regular meals; avoid heavy dinners.",
+      "Core and leg strength 2–3×/week to stabilize posture and digestion.",
+      "Cut refined sugar/snacking; watch for post‑meal sleepiness as a signal."
     ]},
-    Metal:{zh:"肺大肠", tips:[
-      "晨间户外步行与深呼吸，改善肺气",
-      "饮水+高纤维（蔬果/全谷）促进肠道蠕动",
-      "注意皮肤与鼻腔保湿，换季时加强防护"
+    Metal: {en:"Lungs & Large Intestine", tips:[
+      "Morning outdoor walk with deep breathing to improve lung qi.",
+      "Hydrate well and eat fiber (fruits/veggies/whole grains) for gut motility.",
+      "Moisturize skin/nasal passages; add protection during season changes."
     ]},
-    Water:{zh:"肾膀胱", tips:[
-      "保证7.5–9小时睡眠，尽量在23:00前入睡",
-      "充足饮水，适度盐分，避免久坐多动髋/腰背",
-      "安排劳逸结合，连续工作60–90分钟要休息"
+    Water: {en:"Kidneys & Bladder", tips:[
+      "Target 7.5–9 hours of sleep; lights out before 11pm if possible.",
+      "Adequate water and sensible salt; avoid long sitting—move hips/low back.",
+      "Work–rest cycles: take a short break every 60–90 minutes."
     ]}
   };
 
   const LOVE = {
-    Wood:{traits:["生长","主动","规划"], dos:["共同设立长期目标与里程碑","给对方成长空间，少催促"], donts:["避免不耐烦或指责","避免单方面制定计划"]},
-    Fire:{traits:["热情","表达","冒险"], dos:["安排有趣新鲜的约会场景","先倾听后表达，给情绪“冷却期”"], donts:["避免冲动的言语伤害","避免把争论升级为输赢"]},
-    Earth:{traits:["踏实","照顾","稳定"], dos:["多用行动表达关心（接送、做饭）","留出即兴时间，定期小旅行"], donts:["避免过度控制或占有","避免凡事求稳而忽略浪漫"]},
-    Metal:{traits:["标准","秩序","理性"], dos:["清晰沟通边界与期待","固定“二人时光”仪式感"], donts:["避免挑剔与打分式沟通","避免把问题法律化、条款化"]},
-    Water:{traits:["敏感","洞察","包容"], dos:["安排高质量深聊时间","用小记录/卡片表达在乎"], donts:["避免逃避冲突","避免过度牺牲而不表达需要"]}
+    Wood: {traits:["growth‑minded","proactive","planner"],
+           dos:["Set long‑term goals and milestones together","Give space for growth; reduce pushing"],
+           donts:["Avoid impatience or criticism","Avoid unilateral planning"]},
+    Fire: {traits:["passionate","expressive","adventurous"],
+           dos:["Plan fun, novel dates","Listen first; add a 'cool‑down' before responding"],
+           donts:["Avoid impulsive words that hurt","Avoid turning debates into win/lose"]},
+    Earth:{traits:["steady","caring","stable"],
+           dos:["Show care with actions (pickups, cooking)","Leave room for spontaneity; take short trips"],
+           donts:["Avoid over‑control or possessiveness","Avoid being so 'safe' that romance disappears"]},
+    Metal:{traits:["standards","order","rational"],
+           dos:["Clarify boundaries and expectations","Create a ritualized 'us time'"],
+           donts:["Avoid nit‑picking/scorekeeping","Avoid legalistic, contract‑like talk"]},
+    Water:{traits:["sensitive","insightful","accepting"],
+           dos:["Schedule high‑quality deep‑talk time","Use small notes/cards to show care"],
+           donts:["Avoid conflict avoidance","Avoid over‑sacrifice without stating needs"]}
   };
 
   const CAREER_STYLE = {
-    Wood:["适合战略/产品/教育类岗位；以“增长”和“学习曲线”为导向","把大型目标拆解为季度冲刺，避免同时开太多项目"],
-    Fire:["适合销售/市场/公关/领导岗位；需要舞台与速度","设置决策冷静期和复盘机制，防止情绪化"],
-    Earth:["适合运营/项目管理/财务/供应链；稳中求进","建立周/月度例行检查表，持续优化流程"],
-    Metal:["适合法务/审计/工程/质量；崇尚标准化与精确","留出创新与试错窗口，避免僵化"],
-    Water:["适合研究/数据/设计/咨询；善于跨界与整合","定期做优先级排序，防止分散与拖延"]
+    Wood:["Great for strategy/product/education; oriented to growth and learning curves",
+          "Break big goals into quarterly sprints; avoid too many parallel projects"],
+    Fire:["Great for sales/marketing/PR/leadership; needs stage and speed",
+          "Add decision 'cool‑off' and a review cadence to prevent impulsivity"],
+    Earth:["Great for ops/project mgmt/finance/supply chain; steady progress",
+           "Use weekly/monthly checklists; keep improving processes"],
+    Metal:["Great for legal/audit/engineering/quality; values standards and precision",
+           "Reserve time for innovation/experiments; avoid rigidity"],
+    Water:["Great for research/data/design/consulting; cross‑disciplinary and integrative",
+           "Do regular prioritization to prevent scattering and procrastination"]
   };
 
   const WEALTH = {
-    Wood:{profile:"成长型", tips:["组合里保留优质成长与教育/科技主题","年度再平衡，避免一味“加码扩张”","学习基本面框架：现金流、壁垒、复利"]},
-    Fire:{profile:"进取型/动量型", tips:["明确止损与仓位上限，写成规则","分散到不同资产，避免“孤注一掷”","交易后复盘，不做情绪加仓"]},
-    Earth:{profile:"稳健型/现金流", tips:["优先紧急备用金与稳健现金流标的","设置自动定投，抗波动，坚持长期","每年检视保单与负债，降成本"]},
-    Metal:{profile:"规则型/量化", tips:["以规则表驱动投资（如再平衡、估值阈）","避免过度优化历史数据，关注稳健性","记录投资日志，定期检验纪律执行"]},
-    Water:{profile:"灵活型/对冲", tips:["擅长跨市场与多策略，注意信息筛选","设定“信息饮食”，控制频繁换仓","构建预算与现金流表，避免漂移"]}
+    Wood: {profile:"Growth‑oriented", tips:[
+      "Keep quality growth names and education/tech themes in the mix",
+      "Rebalance annually; avoid endless 'adding to expansion'",
+      "Study fundamentals: cash flow, moats, compounding"
+    ]},
+    Fire: {profile:"Aggressive / momentum", tips:[
+      "Define max position size and stop‑loss in writing",
+      "Diversify across assets; avoid all‑in bets",
+      "Review after each trade; no emotion‑driven adds"
+    ]},
+    Earth:{profile:"Steady / cash‑flow", tips:[
+      "Fund emergency savings first; favor reliable cash‑flow assets",
+      "Automate DCA to ride volatility for the long term",
+      "Audit insurance and liabilities annually to cut costs"
+    ]},
+    Metal:{profile:"Rules‑based / quant", tips:[
+      "Drive investing with a rules table (rebalance, valuation thresholds)",
+      "Avoid over‑fitting to history; favor robustness",
+      "Keep an investment log; check discipline execution regularly"
+    ]},
+    Water:{profile:"Flexible / hedged", tips:[
+      "Good at cross‑market, multi‑strategy—curate information carefully",
+      "Set an 'information diet' to reduce churn",
+      "Build a budget and cash‑flow sheet to prevent drift"
+    ]}
   };
 
   function topKey(counts){ return Object.entries(counts).sort((a,b)=>b[1]-a[1])[0][0]; }
   function lowKey(counts){ return Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(-1)[0][0]; }
-  function total(counts){ return ORDER.reduce((s,k)=>s+(counts[k]||0),0); }
-  function normalized(counts){
-    const S=total(counts)||1;
-    const obj={}; ORDER.forEach(k=>obj[k]=((counts[k]||0)/S).toFixed(2));
-    return obj;
-  }
 
-  function buildSection(title, id){
-    const sec = document.createElement('div');
-    sec.className = 'subsec';
-    sec.innerHTML = `<h3>${title}</h3><div id="${id}"></div>`;
-    return sec;
-  }
-
-  function bullets(lines){
-    const ul = document.createElement('ul');
-    ul.className = 'bullets';
-    lines.forEach(t=>{ const li=document.createElement('li'); li.textContent=t; ul.appendChild(li); });
-    return ul;
-  }
-
-  function renderHealth(host, counts){
+  function renderIntoActions(counts){
+    const host = document.getElementById('actions');
+    if(!host) return;
     const most = topKey(counts), least = lowKey(counts);
-    const dom = ORGANS[most];
-    const weakenBy = KE[most];        // 抑制强项
-    const drainTo  = GEN[most];       // 泄去多余
-    const lines = [
-      `重点关照：${most}（${dom.zh}）`,
-      `平衡法则：以 ${weakenBy} 来制衡，以 ${drainTo} 来疏泄（相克为刹车，相生为泄洪）`
-    ].concat(dom.tips);
-    host.appendChild(bullets(lines));
-  }
+    const weakenBy = KE[most], drainTo = GEN[most];
+    const healthHeader = `Focus system: ${most} (${ORGANS[most].en}); balance with ${weakenBy} (brake) and ${drainTo} (vent)`;
 
-  function renderLove(host, counts){
-    const most = topKey(counts), least = lowKey(counts);
+    function liWithSub(title, arr){
+      const li = document.createElement('li');
+      const b = document.createElement('b'); b.textContent = title; li.appendChild(b);
+      const sub = document.createElement('ul'); sub.className = 'bullets';
+      arr.forEach(t=>{ const x=document.createElement('li'); x.textContent=t; sub.appendChild(x); });
+      li.appendChild(sub); return li;
+    }
+
+    host.innerHTML='';
+    // Health
+    host.appendChild(liWithSub("Health", [healthHeader].concat(ORGANS[most].tips)));
+    // Love
     const L = LOVE[most];
-    const lines = [
-      `你的主导气质：${most}（${L.traits.join(" / ")}）`,
-      `关系里需要补齐：${least}（多引入其特质与节奏）`,
-      "建议："
+    const loveArr = [
+      `Your dominant vibe: ${most} (${L.traits.join(" / ")})`,
+      `What to complement: ${least}`
     ].concat(L.dos.map(x=>"✔ "+x)).concat(L.donts.map(x=>"✘ "+x));
-    host.appendChild(bullets(lines));
-  }
-
-  function renderCareer(host, counts){
-    const most = topKey(counts), least = lowKey(counts);
-    const lines = [
-      `工作风格：以 ${most} 为主，注意 ${least} 维度的短板`,
-      ...CAREER_STYLE[most]
-    ];
-    host.appendChild(bullets(lines));
-  }
-
-  function renderWealth(host, counts){
-    const most = topKey(counts), least = lowKey(counts);
+    host.appendChild(liWithSub("Love", loveArr));
+    // Career
+    const careerArr = [
+      `Work style: led by ${most}; watch the ${least} dimension`
+    ].concat(CAREER_STYLE[most]||[]);
+    host.appendChild(liWithSub("Career", careerArr));
+    // Wealth
     const w = WEALTH[most];
-    const lines = [
-      `金钱性格：${w.profile}（主导：${most}；需补：${least}）`,
-      "行动要点：",
-      ...w.tips
-    ];
-    host.appendChild(bullets(lines));
-  }
-
-  
-  function ensureAdviceSections(){
-    const pro = document.getElementById('pro-sections');
-    if(!pro) return null;
-    // Try to find existing
-    let box = document.getElementById('advice-box');
-    if(!box){
-      box = document.createElement('section');
-      box.id = 'advice-box';
-      box.className = 'subsec';
-      box.innerHTML = `<h2>个性化建议（Based on Five Elements）</h2>`;
-      // Place BEFORE the Lucky Windows section if we can find it
-      let lucky = document.getElementById('windows');
-      if(lucky && lucky.parentElement && lucky.parentElement.parentElement === pro){
-        pro.insertBefore(box, lucky.parentElement);
-      }else{
-        pro.appendChild(box);
-      }
-    } else {
-      box.innerHTML = `<h2>个性化建议（Based on Five Elements）</h2>`;
-    }
-    const secHealth = buildSection("健康 / Health", "adv-health");
-    const secLove   = buildSection("爱情 / Love", "adv-love");
-    const secCareer = buildSection("事业 / Career", "adv-career");
-    const secWealth = buildSection("财运 / Wealth", "adv-wealth");
-    box.appendChild(secHealth); box.appendChild(secLove); box.appendChild(secCareer); box.appendChild(secWealth);
-    return box;
-  }
-else {
-      box.innerHTML = `<h2>个性化建议（Based on Five Elements）</h2>`;
-    }
-    const secHealth = buildSection("健康 / Health", "adv-health");
-    const secLove   = buildSection("爱情 / Love", "adv-love");
-    const secCareer = buildSection("事业 / Career", "adv-career");
-    const secWealth = buildSection("财运 / Wealth", "adv-wealth");
-    box.appendChild(secHealth); box.appendChild(secLove); box.appendChild(secCareer); box.appendChild(secWealth);
-    return box;
+    const wealthArr = [
+      `Money profile: ${w.profile} (lead: ${most}; add: ${least})`
+    ].concat(w.tips||[]);
+    host.appendChild(liWithSub("Wealth", wealthArr));
   }
 
   function run(){
     try{
       const data = JSON.parse(localStorage.getItem('ff_result_en')||'null');
       if(!data || !data.counts) return;
-      const pro = document.getElementById('pro-sections');
-      if(!pro) return;
-      // Respect paywall: only render when unlocked
-      const isLocked = pro.classList.contains('lock');
-      if(isLocked) return;
-      ensureAdviceSections();
-      renderHealth(document.getElementById('adv-health'), data.counts);
-      renderLove(document.getElementById('adv-love'), data.counts);
-      renderCareer(document.getElementById('adv-career'), data.counts);
-      renderWealth(document.getElementById('adv-wealth'), data.counts);
-    }catch(e){
-      console.error("Advice render error:", e);
-    }
+      renderIntoActions(data.counts);
+    }catch(e){ console.error("Advice render error:", e); }
   }
 
   document.addEventListener('DOMContentLoaded', function(){
-    // Try after base report finished
-    setTimeout(run, 60); // slight delay to allow paywall toggle
+    setTimeout(run, 80);
   });
 })();
