@@ -1,6 +1,6 @@
 <!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>FortuneFlow — BaZi & Five Elements</title><link rel="stylesheet" href="styles.css">
-<script src="assets/js/countries.min.js" defer></script>
+<script src="assets/js/geo.js" defer></script>
 </head><body><div class="topbar no-print">
   <div class="container row">
     <div class="brand">FortuneFlow</div>
@@ -17,29 +17,6 @@
   <h1>FortuneFlow — BaZi & Five Elements</h1>
   <section class="card">
     <h2>Auto Four Pillars</h2>
-
-<!-- Country + Timezone (Professional) -->
-<div id="ff-ctz" style="margin:.5rem 0 1rem; padding:.5rem; border:1px dashed #e2e2e2; border-radius:8px;">
-  <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-    <label for="ff-country-country" style="min-width:70px;">Country</label>
-    <select id="ff-country-country" style="min-width:220px;"></select>
-    <label for="ff-country-zone" style="margin-left:10px; min-width:80px;">Time&nbsp;zone</label>
-    <select id="ff-country-zone" style="min-width:260px;"></select>
-    <span id="ff-ctz-note" style="font-size:12px;color:#666;">Tip: select country first, then pick a timezone/city.</span>
-  </div>
-</div>
-
-
-<!-- Location Mode Toggle -->
-<div id="ff-locmode" style="margin:.5rem 0 1rem; padding:.5rem; border:1px dashed #e2e2e2; border-radius:8px;">
-  <label style="margin-right:12px;"><input type="radio" name="locmode" value="advanced" checked> Advanced (City/Timezone)</label>
-  <label><input type="radio" name="locmode" value="basic"> Basic (Country)</label>
-  <div id="ff-basic-block" style="display:none; margin-top:.5rem;">
-    <label for="ff-country-basic" style="display:block; margin-bottom:.25rem;">Country (200+)</label>
-    <select id="ff-country-basic" style="min-width:240px;"></select>
-  </div>
-</div>
-
     <p>Select country, date, time. We'll fill the four pillars for you. Then results will be calculated automatically.</p>
     <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
       <label for="ff-country">Country</label><select id="ff-country"></select>
@@ -82,7 +59,6 @@
   </section>
 </div>
 <script>
-const COUNTRY_TIME=[["China (+08:00)",480,480,false,"N"],["USA - Los Angeles (-480/-420)",-480,-420,true,"N"],["USA - New York (-300/-240)",-300,-240,true,"N"],["Canada - Toronto (-300/-240)",-300,-240,true,"N"],["Hong Kong (+08:00)",480,480,false,"N"],["Taiwan (+08:00)",480,480,false,"N"],["Japan (+09:00)",540,540,false,"N"],["South Korea (+09:00)",540,540,false,"N"],["Mexico City (-360)",-360,-360,false,"N"],["Spain (+60/+120)",60,120,true,"N"],["United Kingdom (0/+60)",0,60,true,"N"],["Germany (+60/+120)",60,120,true,"N"],["France (+60/+120)",60,120,true,"N"],["Italy (+60/+120)",60,120,true,"N"],["Netherlands (+60/+120)",60,120,true,"N"],["Greece (+120/+180)",120,180,true,"N"],["UAE (+240)",240,240,false,"N"],["Australia - Sydney (+10/+11)",600,660,true,"S"],["New Zealand - Wellington (+12/+13)",720,780,true,"S"]];
 function populateCountry(){ const el=document.getElementById('ff-country'); el.innerHTML=''; COUNTRY_TIME.forEach((r,i)=>{const o=document.createElement('option'); o.value=i; o.textContent=r[0]; el.appendChild(o);}); if(el.options.length>0) el.selectedIndex=0; }
 function inferOffset(idx, dateStr){ const r=COUNTRY_TIME[idx]; if(!r) return 0; const std=r[1], dst=r[2], has=r[3], hem=r[4]; if(!has || !dateStr){ return std; } const a=dateStr.split('-'); const m=parseInt(a[1]||'1',10), d=parseInt(a[2]||'1',10); const mmdd=m*100+d; if(hem==='N'){ return (mmdd>=401 && mmdd<=1031) ? dst : std; } else { return ((mmdd>=1101&&mmdd<=1231)||(mmdd>=101&&mmdd<=331))?dst:std; } }
 const STEMS_ZH=["甲","乙","丙","丁","戊","己","庚","辛","壬","癸"]; const BRANCHES_ZH=["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
@@ -133,169 +109,4 @@ function renderTable(counts){ const table=document.createElement('table'); table
 function calculateAndShow(){ const ids=['year','month','day','hour']; const arr=ids.map(p=>{ const s=parseInt(document.getElementById(p+'-stem').value,10); const b=parseInt(document.getElementById(p+'-branch').value,10); return tally(s,b); }); const t=totalCounts(arr); renderBars(t); renderTable(t); const order=Object.entries(t).sort((a,b)=>b[1]-a[1]); const most=order[0][0], least=order[4][0]; const lucky=luckyBy(least); document.getElementById('advice').innerHTML='<b>Strongest:</b> '+most+'<br/><b>Weakest:</b> '+least+'<br/><b>Lucky colors:</b> '+(lucky.join(', ')||'—'); localStorage.setItem('ff_result_en', JSON.stringify({counts:t,most,least,lucky})); }
 document.addEventListener('DOMContentLoaded',function(){ ['year','month','day','hour'].forEach(p=>{buildSelect(STEMS_DATA,p+'-stem');buildSelect(BRANCHES_DATA,p+'-branch');}); document.getElementById('calc-btn').addEventListener('click',calculateAndShow); populateCountry(); function sync(){try{const idx=parseInt(document.getElementById('ff-country').value||'0',10); const d=(document.getElementById('ff-date').value||''); document.getElementById('ff-offset').value=String(inferOffset(idx,d));}catch(e){console.warn('offset fallback',e); document.getElementById('ff-offset').value='0';}} document.getElementById('ff-country').addEventListener('change',sync); document.getElementById('ff-date').addEventListener('change',sync); sync(); document.getElementById('ff-autofill').addEventListener('click',function(){ const err=document.getElementById('ff-error'); err.style.display='none'; const ds=(document.getElementById('ff-date').value||'').trim(); const ts=(document.getElementById('ff-time').value||'').trim(); const os=(document.getElementById('ff-offset').value||'0').trim(); if(!ds){err.textContent='Please select your birth date.'; err.style.display='block'; return;} try{ const p=autoFourPillarsFromInput(ds,ts,os); ['year','month','day','hour'].forEach(id=>{ document.getElementById(id+'-stem').value=String(p[id].stemIdx); document.getElementById(id+'-branch').value=String(p[id].branchIdx);}); const S=STEMS_ZH,B=BRANCHES_ZH; const fmt=q=>S[q.stemIdx]+B[q.branchIdx]; document.getElementById('ff-disp').innerHTML='<div class=\"mono\" style=\"padding:10px;border:1px solid #eee;border-radius:8px\"><div><b>Year:</b> '+fmt(p.year)+'</div><div><b>Month:</b> '+fmt(p.month)+'</div><div><b>Day:</b> '+fmt(p.day)+'</div><div><b>Hour:</b> '+fmt(p.hour)+'</div></div>'; calculateAndShow(); }catch(e){err.textContent=e.message||'Error'; err.style.display='block'; console.error(e);} }); });</script>
 <script src="/nav-timing.js" defer></script>
-
-<script>
-(function(){
-  function closestRow(el){
-    var n=el; while(n && n.parentElement){ 
-      if(n.tagName==='DIV' || n.tagName==='SECTION' || (n.className||'').includes('row')) return n;
-      n=n.parentElement;
-    }
-    return el.parentElement||el;
-  }
-  function showAdvanced(on){
-    var advSel = document.getElementById('ff-country');
-    if(advSel){
-      var row = closestRow(advSel);
-      if(row) row.style.display = on ? '' : 'none';
-    }
-    document.getElementById('ff-basic-block').style.display = on ? 'none' : '';
-    localStorage.setItem('ff_locmode', on ? 'advanced' : 'basic');
-  }
-  function fillCountries(){
-    var sel = document.getElementById('ff-country-basic');
-    if(!sel || !window.FF_COUNTRIES) return;
-    sel.innerHTML='';
-    FF_COUNTRIES.forEach(function(name){
-      var o = document.createElement('option');
-      o.value = name; o.textContent = name; sel.appendChild(o);
-    });
-    var saved = localStorage.getItem('ff_country_basic') || 'China';
-    if([].some.call(sel.options, opt=>opt.value===saved)){ sel.value = saved; }
-  }
-  function wireToggle(){
-    var radios = document.querySelectorAll('input[name="locmode"]');
-    radios.forEach(function(r){ r.addEventListener('change', function(){
-      showAdvanced(this.value==='advanced');
-    }); });
-    var mode = localStorage.getItem('ff_locmode') || 'advanced';
-    var r = document.querySelector('input[name="locmode"][value="'+mode+'"]');
-    if(r){ r.checked = true; showAdvanced(mode==='advanced'); }
-  }
-  document.addEventListener('DOMContentLoaded', function(){
-    fillCountries();
-    wireToggle();
-  });
-
-  document.addEventListener('DOMContentLoaded', function(){
-    var btn = document.getElementById('calc-btn');
-    if(!btn) return;
-    btn.addEventListener('click', function(){
-      var mode = localStorage.getItem('ff_locmode') || 'advanced';
-      if(mode==='basic'){
-        var v = (document.getElementById('ff-country-basic')||{}).value || '';
-        if(v) localStorage.setItem('ff_country_basic', v);
-      }
-    }, {capture:true});
-  });
-})();
-</script>
-
-
-<script>
-(function(){
-  function hideOriginalCountry(){
-    const sel = document.getElementById('ff-country');
-    if(!sel) return null;
-    let n = sel; while(n && n.parentElement){
-      if(/row|section|div/i.test(n.tagName) || (n.className||'').match(/row|field|group/)){ n.style.display='none'; break; }
-      n = n.parentElement;
-    }
-    return sel;
-  }
-  function parseCountryLabel(label){
-    const hy = label.indexOf(' - ');
-    if(hy>0) return label.slice(0, hy).trim();
-    return label.replace(/\s*\(.+?\)\s*$/, '').trim();
-  }
-  function buildGroupedFromCOUNTRY_TIME(){
-    if(!window.COUNTRY_TIME) return {};
-    const grouped = {};
-    window.COUNTRY_TIME.forEach((r, idx)=>{
-      const label = r[0];
-      const country = parseCountryLabel(label);
-      (grouped[country] ||= []).push({label, idx});
-    });
-    Object.values(grouped).forEach(list=>list.sort((a,b)=>a.label.localeCompare(b.label)));
-    return grouped;
-  }
-  function tokensForCountry(name){
-    const A = {
-      "United States":["USA","United States","US","America"],
-      "United Kingdom":["UK","United Kingdom","Britain","England","Scotland","Wales","Northern Ireland","Great Britain"],
-      "Russia":["Russia","Russian Federation","Moscow"],
-      "Myanmar (Burma)":["Myanmar","Burma"],
-      "Czechia (Czech Republic)":["Czechia","Czech Republic"],
-      "Côte d’Ivoire":["Côte d’Ivoire","Cote d'Ivoire","Ivory Coast"],
-      "Democratic Republic of the Congo":["Democratic Republic of the Congo","DR Congo","Congo - Kinshasa"],
-      "Congo (Congo-Brazzaville)":["Congo","Congo - Brazzaville"],
-      "South Korea":["Korea - Seoul","South Korea","Korea"],
-      "North Korea":["North Korea","DPRK"],
-      "United Arab Emirates":["UAE","United Arab Emirates"],
-      "Hong Kong":["Hong Kong"],
-      "Macao":["Macao","Macau"],
-      "Taiwan":["Taiwan"],
-      "Türkiye":["Turkey","Türkiye"],
-      "Eswatini":["Eswatini","Swaziland"]
-    };
-    return A[name] || [name];
-  }
-  function populateCountrySelect(countrySel, grouped){
-    const names = Array.isArray(window.FF_COUNTRIES) && window.FF_COUNTRIES.length>0
-      ? window.FF_COUNTRIES.slice()
-      : Object.keys(grouped);
-    countrySel.innerHTML='';
-    names.forEach(n=>{
-      const o=document.createElement('option'); o.value=n; o.textContent=n; countrySel.appendChild(o);
-    });
-    const saved = localStorage.getItem('ff_country_basic') || 'China';
-    if([].some.call(countrySel.options,opt=>opt.value===saved)) countrySel.value = saved;
-  }
-  function populateZoneSelect(zoneSel, countryName, grouped, hiddenOriginal){
-    const tokens = tokensForCountry(countryName).map(s=>s.toLowerCase());
-    let matches = [];
-    Object.entries(grouped).forEach(([key, list])=>{
-      const low = key.toLowerCase();
-      if(tokens.some(t=>low.includes(t))) matches = matches.concat(list);
-    });
-    if(matches.length===0){
-      const all = [];
-      Object.values(grouped).forEach(list=> list.forEach(x=>all.push(x)));
-      matches = all.filter(x=> tokens.some(t=> x.label.toLowerCase().includes(t)));
-    }
-    if(matches.length===0){
-      Object.values(grouped).forEach(list=> list.forEach(x=>matches.push(x)));
-    }
-    zoneSel.innerHTML='';
-    matches.forEach(x=>{
-      const o=document.createElement('option');
-      o.value = String(x.idx);
-      o.textContent = x.label;
-      zoneSel.appendChild(o);
-    });
-    const prefer = matches.find(x=> /Beijing|Sydney|Toronto|New York|Los Angeles|London|Paris|Berlin|Tokyo|Seoul|Singapore|Moscow/i.test(x.label)) || matches[0];
-    if(prefer) zoneSel.value = String(prefer.idx);
-    if(hiddenOriginal){
-      hiddenOriginal.selectedIndex = parseInt(zoneSel.value,10) || 0;
-    }
-  }
-  document.addEventListener('DOMContentLoaded', function(){
-    const hiddenOriginal = hideOriginalCountry();
-    const countrySel = document.getElementById('ff-country-country');
-    const zoneSel = document.getElementById('ff-country-zone');
-    if(!countrySel || !zoneSel) return;
-    const grouped = buildGroupedFromCOUNTRY_TIME();
-    function sync(){ 
-      populateZoneSelect(zoneSel, countrySel.value, grouped, hiddenOriginal); 
-      localStorage.setItem('ff_country_basic', countrySel.value);
-    }
-    // Populate country once FF_COUNTRIES ready (defer to next tick in case countries.min.js is deferred)
-    setTimeout(function(){ populateCountrySelect(countrySel, grouped); sync(); }, 50);
-    countrySel.addEventListener('change', sync);
-    zoneSel.addEventListener('change', function(){
-      if(hiddenOriginal) hiddenOriginal.selectedIndex = parseInt(zoneSel.value,10) || 0;
-    });
-  });
-})();
-</script>
 </body></html>

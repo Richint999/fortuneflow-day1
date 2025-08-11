@@ -42,7 +42,11 @@
           <h3>You</h3>
           <div class="grid cols-2">
             <div><label>Country</label>
-              <select id="a-country"></select>
+              <select id="a-country">
+                <option value="CN" selected>China</option><option value="US">United States</option><option value="CA">Canada</option>
+                <option value="UK">United Kingdom</option><option value="AU">Australia</option><option value="DE">Germany</option>
+                <option value="FR">France</option><option value="ES">Spain</option>
+              </select>
             </div>
             <div><label>Hour (optional)</label>
               <select id="a-hour">
@@ -61,7 +65,11 @@
           <h3>Partner</h3>
           <div class="grid cols-2">
             <div><label>Country</label>
-              <select id="b-country"></select>
+              <select id="b-country">
+                <option value="CN" selected>China</option><option value="US">United States</option><option value="CA">Canada</option>
+                <option value="UK">United Kingdom</option><option value="AU">Australia</option><option value="DE">Germany</option>
+                <option value="FR">France</option><option value="ES">Spain</option>
+              </select>
             </div>
             <div><label>Hour (optional)</label>
               <select id="b-hour">
@@ -122,18 +130,7 @@
     });
   </script>
 
-<script src="../assets/js/countries.min.js" defer></script>
-<script>
-document.addEventListener('DOMContentLoaded', function(){
-  function fill(id){
-    var sel=document.getElementById(id); if(!sel||!window.FF_COUNTRIES) return;
-    sel.innerHTML=''; FF_COUNTRIES.forEach(function(name){
-      var o=document.createElement('option'); o.value=name; o.textContent=name; sel.appendChild(o);
-    });
-    sel.value='China';
-  }
-  fill('a-country'); fill('b-country');
-});
-</script>
+<script src="../assets/js/geo.js" defer></script>
 
+<script>document.addEventListener('DOMContentLoaded',function(){ window.__FF_COUNTRY__ && __FF_COUNTRY__.populateCountrySelect('a-country'); window.__FF_COUNTRY__ && __FF_COUNTRY__.populateCountrySelect('b-country'); });</script>
 </body></html>
