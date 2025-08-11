@@ -152,5 +152,55 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.addEventListener('DOMContentLoaded',()=>setTimeout(render,80));
 })();
 </script>
+<script>
+(function(){
+  const GEN={Wood:"Fire",Fire:"Earth",Earth:"Metal",Metal:"Water",Water:"Wood"};
+  const KE ={Wood:"Earth",Earth:"Water",Water:"Fire",Fire:"Metal",Metal:"Wood"};
+  const ORG={
+    Wood:{en:"Liver & Gallbladder",tips:["Keep a consistent sleep schedule (ideally before 11pm).","Daily neck/shoulder & hip-flexor mobility.","Favor dark-green veggies; a bit of sour. Go easy on deep-fried & hard liquor."]},
+    Fire:{en:"Heart & Small Intestine",tips:["Limit late-night caffeine/sugar.","10–20min daily cardio + breath work.","When emotions surge: pause → cool-down → communicate."]},
+    Earth:{en:"Spleen & Stomach",tips:["Warm foods, less raw/cold; regular meals; light dinners.","Core & leg strength 2–3×/week.","Cut refined sugar/snacks; watch post-meal sleepiness."]},
+    Metal:{en:"Lungs & Large Intestine",tips:["Morning outdoor walk + deep breathing.","Hydrate + fiber for gut motility.","Moisturize skin/nasal passages; extra protection in season changes."]},
+    Water:{en:"Kidneys & Bladder",tips:["Sleep 7.5–9h; lights out before 11pm if possible.","Adequate water; avoid long sitting—move hips/low back.","Work–rest cycles: break every 60–90 min."]}
+  };
+  const LOVE={
+    Wood:{traits:["growth-minded","proactive","planner"],dos:["Set long-term goals together","Give space for growth"],donts:["Avoid impatience/criticism","Avoid unilateral planning"]},
+    Fire:{traits:["passionate","expressive","adventurous"],dos:["Plan fun, novel dates","Listen first; add a cool-down"],donts:["Avoid impulsive words","Avoid win/lose fights"]},
+    Earth:{traits:["steady","caring","stable"],dos:["Show care with actions","Leave room for spontaneity/trips"],donts:["Avoid over-control/possessiveness","Don’t be so ‘safe’ that romance dies"]},
+    Metal:{traits:["standards","order","rational"],dos:["Clarify boundaries/expectations","Create ritualized ‘us time’"],donts:["Avoid nit-picking/scorekeeping","Avoid legalistic talk"]},
+    Water:{traits:["sensitive","insightful","accepting"],dos:["Schedule deep-talk time","Use small notes/cards"],donts:["Don’t avoid conflict","Don’t over-sacrifice without needs stated"]}
+  };
+  const CAREER={
+    Wood:["Great for strategy/product/education; growth focus","Quarterly sprints; avoid too many parallel tracks"],
+    Fire:["Great for sales/marketing/PR/leadership; speed","Add cool-off & review cadence to curb impulsivity"],
+    Earth:["Great for ops/PM/finance/supply chain; steady","Weekly/monthly checklists; process improvement"],
+    Metal:["Great for legal/audit/engineering/quality; precision","Reserve time for innovation; avoid rigidity"],
+    Water:["Great for research/data/design/consulting; integrative","Regular prioritization to prevent scattering"]
+  };
+  const WEALTH={
+    Wood:{p:"Growth-oriented",tips:["Keep quality growth/education/tech in mix","Annual rebalance; avoid endless expansion","Study fundamentals: cash flow, moats, compounding"]},
+    Fire:{p:"Aggressive / momentum",tips:["Define max position & stop-loss in writing","Diversify; avoid all-in","Review after trades; no emotion adds"]},
+    Earth:{p:"Steady / cash-flow",tips:["Fund emergency savings first","Automate DCA for the long term","Audit insurance/liabilities yearly"]},
+    Metal:{p:"Rules-based / quant",tips:["Invest by rules table (rebalance/valuation)","Avoid over-fitting; favor robustness","Keep an investment log; check discipline"]},
+    Water:{p:"Flexible / hedged",tips:["Curate info across markets/strategies","Set an information diet","Build a budget & cash-flow sheet"]}
+  };
+  function topKey(c){return Object.entries(c).sort((a,b)=>b[1]-a[1])[0][0]}
+  function lowKey(c){return Object.entries(c).sort((a,b)=>b[1]-a[1]).slice(-1)[0][0]}
+  function liGroup(title,items){const li=document.createElement('li');const b=document.createElement('b');b.textContent=title;li.appendChild(b);const ul=document.createElement('ul');ul.className='bullets';items.forEach(t=>{const x=document.createElement('li');x.textContent=t;ul.appendChild(x)});li.appendChild(ul);return li}
+  function render(){
+    const data=JSON.parse(localStorage.getItem('ff_result_en')||'null'); if(!data||!data.counts) return;
+    const actions=document.getElementById('actions'); if(!actions) return;
+    const most=topKey(data.counts), least=lowKey(data.counts);
+    const healthHdr=`Focus system: ${most} (${ORG[most].en}); balance with ${KE[most]} (brake) and ${GEN[most]} (vent)`;
+    actions.innerHTML='';
+    actions.appendChild(liGroup('Health',[healthHdr,...ORG[most].tips]));
+    const L=LOVE[most]; actions.appendChild(liGroup('Love',[`Your dominant vibe: ${most} (${L.traits.join(' / ')})`,`What to complement: ${least}`,...L.dos.map(x=>'✔ '+x),...L.donts.map(x=>'✘ '+x)]));
+    actions.appendChild(liGroup('Career',[`Work style: led by ${most}; watch the ${least} dimension`,...CAREER[most]]));
+    const w=WEALTH[most]; actions.appendChild(liGroup('Wealth',[`Money profile: ${w.p} (lead: ${most}; add: ${least})`,...w.tips]));
+    console.log('[FF] advice inline rendered with most=',most,'least=',least);
+  }
+  document.addEventListener('DOMContentLoaded',()=>setTimeout(render,80));
+})();
+</script>
 
 </body></html>
