@@ -153,6 +153,38 @@
       $('#num-pers').textContent = N.personalityNumber(name);
       $('#num-pyear').textContent = N.personalYear(dateStr, new Date());
 $('#num-pyear').textContent = N.personalYear(dateStr, new Date());
+      $('#num-pyear').textContent = N.personalYear(dateStr, new Date());
+
+// === 保存到 localStorage，Report 读取 ===
+const payload = {
+  name,
+  country: $('#ff-country').value || '',
+  date: dateStr,
+  time: timeStr || '12:00',
+  offset: utcOffsetMinutes,
+  lon: $('#ff-lon').value || '',
+  tst: $('#ff-tst').checked ? 1 : 0
+};
+try { localStorage.setItem('ff_last', JSON.stringify(payload)); } catch(_) {}
+
+// === 显示“去 Report”CTA（如果你已经加过 CTA，可以保留一次即可）===
+const cta = document.getElementById('report-cta');
+const btn = document.getElementById('btn-report');
+if (cta && btn) {
+  const q = new URLSearchParams({
+    name: payload.name,
+    country: payload.country,
+    date: payload.date,
+    time: payload.time,
+    offset: String(payload.offset),
+    lon: payload.lon,
+    tst: String(payload.tst),
+    src: 'calc'
+  }).toString();
+  btn.href = 'report.html?' + q;   // 有实际支付/报告链接就替换这里
+  cta.style.display = 'block';
+}
+
 
 // === Report CTA（付费报告引导）===
 const cta = $('#report-cta');
