@@ -1,0 +1,16 @@
+{
+  "site_title": "FortuneFlow — BaZi y Cinco Elementos",
+  "auto_four_pillars": "Cuatro Pilares Automáticos",
+  "panel_tip": "Selecciona país, fecha y hora. Completaremos los cuatro pilares y calcularemos los resultados automáticamente.",
+  "country": "País",
+  "birth_date": "Fecha de nacimiento",
+  "birth_time": "Hora de nacimiento",
+  "autofill": "Auto-Rellenar",
+  "error_select_date": "Por favor, selecciona tu fecha de nacimiento.",
+  "filled_hint": "Completado automáticamente. Calculando...",
+  "year": "Año",
+  "month": "Mes",
+  "day": "Día",
+  "hour": "Hora",
+  "lucky_colors": "Colores de la suerte"
+}
