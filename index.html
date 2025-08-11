@@ -105,68 +105,7 @@ function totalCounts(arr){ const t={Wood:0,Fire:0,Earth:0,Metal:0,Water:0}; arr.
 function luckyBy(e){ const map={Wood:['green','cyan'],Fire:['red','orange'],Earth:['yellow','brown'],Metal:['white','silver','gold'],Water:['black','blue','navy']}; return (map[e]||[]); }
 function renderBars(counts){ const c=document.getElementById('five-bars'); if(!c)return; c.innerHTML=''; ELEMENT_KEYS.forEach(key=>{ const bar=document.createElement('div'); bar.className='bar'; const v=counts[key]||0; bar.style.height=(10+v*22)+'px'; const label=document.createElement('span'); label.textContent=key+' '+v; bar.appendChild(label); c.appendChild(bar); }); }
 function renderTable(counts){ const table=document.createElement('table'); table.innerHTML='<thead><tr><th>Five Elements</th><th style=\"text-align:right\">#</th></tr></thead>'; const tbody=document.createElement('tbody'); ELEMENT_KEYS.forEach(k=>{ const tr=document.createElement('tr'); tr.innerHTML='<td>'+k+'</td><td style=\"text-align:right\">'+(counts[k]||0)+'</td>'; tbody.appendChild(tr); }); table.appendChild(tbody); const host=document.getElementById('result-host'); if(host){ host.innerHTML=''; host.appendChild(table); } }
-function calculateAndShow(){ const ids=['year','month','day','hour']; const arr=ids.map(p=>{ const s=parseInt(document.getElementById(p+'-stem').value,10); const b=parseInt(document.getElementById(p+'-branch').value,10); return tally(s,b); }); const t=totalCounts(arr); renderBars(t); renderTable(t); const order=Object.entries(t).sort((a,b)=>b[1]-a[1]); const most=order[0][0], least=order[4][0]; const lucky=luckyBy(least); document.getElementById('advice').innerHTML='<b>Strongest:</b> '+most+'<br/><b>Weakest:</b> '+least+'<br/><b>Lucky colors:</b> '+(lucky.join(', ')||'—'); localStorage.setItem('ff_result_en', JSON.stringify({counts:t,most,least,lucky}));  saveAdvice(t); }
+function calculateAndShow(){ const ids=['year','month','day','hour']; const arr=ids.map(p=>{ const s=parseInt(document.getElementById(p+'-stem').value,10); const b=parseInt(document.getElementById(p+'-branch').value,10); return tally(s,b); }); const t=totalCounts(arr); renderBars(t); renderTable(t); const order=Object.entries(t).sort((a,b)=>b[1]-a[1]); const most=order[0][0], least=order[4][0]; const lucky=luckyBy(least); document.getElementById('advice').innerHTML='<b>Strongest:</b> '+most+'<br/><b>Weakest:</b> '+least+'<br/><b>Lucky colors:</b> '+(lucky.join(', ')||'—'); localStorage.setItem('ff_result_en', JSON.stringify({counts:t,most,least,lucky})); }
 document.addEventListener('DOMContentLoaded',function(){ ['year','month','day','hour'].forEach(p=>{buildSelect(STEMS_DATA,p+'-stem');buildSelect(BRANCHES_DATA,p+'-branch');}); document.getElementById('calc-btn').addEventListener('click',calculateAndShow); populateCountry(); function sync(){try{const idx=parseInt(document.getElementById('ff-country').value||'0',10); const d=(document.getElementById('ff-date').value||''); document.getElementById('ff-offset').value=String(inferOffset(idx,d));}catch(e){console.warn('offset fallback',e); document.getElementById('ff-offset').value='0';}} document.getElementById('ff-country').addEventListener('change',sync); document.getElementById('ff-date').addEventListener('change',sync); sync(); document.getElementById('ff-autofill').addEventListener('click',function(){ const err=document.getElementById('ff-error'); err.style.display='none'; const ds=(document.getElementById('ff-date').value||'').trim(); const ts=(document.getElementById('ff-time').value||'').trim(); const os=(document.getElementById('ff-offset').value||'0').trim(); if(!ds){err.textContent='Please select your birth date.'; err.style.display='block'; return;} try{ const p=autoFourPillarsFromInput(ds,ts,os); ['year','month','day','hour'].forEach(id=>{ document.getElementById(id+'-stem').value=String(p[id].stemIdx); document.getElementById(id+'-branch').value=String(p[id].branchIdx);}); const S=STEMS_ZH,B=BRANCHES_ZH; const fmt=q=>S[q.stemIdx]+B[q.branchIdx]; document.getElementById('ff-disp').innerHTML='<div class=\"mono\" style=\"padding:10px;border:1px solid #eee;border-radius:8px\"><div><b>Year:</b> '+fmt(p.year)+'</div><div><b>Month:</b> '+fmt(p.month)+'</div><div><b>Day:</b> '+fmt(p.day)+'</div><div><b>Hour:</b> '+fmt(p.hour)+'</div></div>'; calculateAndShow(); }catch(e){err.textContent=e.message||'Error'; err.style.display='block'; console.error(e);} }); });</script>
 <script src="/nav-timing.js" defer></script>
-
-<!-- Advice generator (English) -->
-<script>
-(function(){
-  const GEN={Wood:"Fire",Fire:"Earth",Earth:"Metal",Metal:"Water",Water:"Wood"};
-  const KE ={Wood:"Earth",Earth:"Water",Water:"Fire",Fire:"Metal",Metal:"Wood"};
-  const ORG={
-    Wood:{en:"Liver & Gallbladder",tips:["Keep a consistent sleep schedule (before 11pm).","Daily neck/shoulder & hip-flexor mobility.","Favor dark-green veggies; a bit of sour; go easy on deep-fried & hard liquor."]},
-    Fire:{en:"Heart & Small Intestine",tips:["Limit late-night caffeine/sugar.","10–20min cardio + breath work daily.","When emotions surge: pause → cool-down → communicate."]},
-    Earth:{en:"Spleen & Stomach",tips:["Warm foods, less raw/cold; regular meals; light dinners.","Core & leg strength 2–3×/week.","Cut refined sugar/snacks; watch post-meal sleepiness."]},
-    Metal:{en:"Lungs & Large Intestine",tips:["Morning outdoor walk + deep breathing.","Hydrate + fiber for gut motility.","Moisturize skin/nasal passages; protect at season changes."]},
-    Water:{en:"Kidneys & Bladder",tips:["Sleep 7.5–9h; lights out before 11pm if possible.","Adequate water; avoid long sitting—move hips/low back.","Work–rest cycles: short break every 60–90 min."]}
-  };
-  const LOVE={
-    Wood:{traits:["growth-minded","proactive","planner"],dos:["Set long-term goals together","Give space for growth"],donts:["Avoid impatience/criticism","Avoid unilateral planning"]},
-    Fire:{traits:["passionate","expressive","adventurous"],dos:["Plan fun, novel dates","Listen first; add a cool-down"],donts:["Avoid impulsive words","Avoid win/lose fights"]},
-    Earth:{traits:["steady","caring","stable"],dos:["Show care with actions","Leave room for spontaneity/trips"],donts:["Avoid over-control/possessiveness","Don’t be so ‘safe’ that romance dies"]},
-    Metal:{traits:["standards","order","rational"],dos:["Clarify boundaries/expectations","Create ritualized ‘us time’"],donts:["Avoid nit-picking/scorekeeping","Avoid legalistic talk"]},
-    Water:{traits:["sensitive","insightful","accepting"],dos:["Schedule deep-talk time","Use small notes/cards"],donts:["Don’t avoid conflict","Don’t over-sacrifice without stating needs"]}
-  };
-  const CAREER={
-    Wood:["Great for strategy/product/education; growth focus","Quarterly sprints; avoid too many parallel tracks"],
-    Fire:["Great for sales/marketing/PR/leadership; speed","Add cool-off & review cadence to curb impulsivity"],
-    Earth:["Great for ops/PM/finance/supply chain; steady","Weekly/monthly checklists; process improvement"],
-    Metal:["Great for legal/audit/engineering/quality; precision","Reserve time for innovation; avoid rigidity"],
-    Water:["Great for research/data/design/consulting; integrative","Regular prioritization to prevent scattering"]
-  };
-  const WEALTH={
-    Wood:{p:"Growth-oriented",tips:["Keep quality growth/education/tech in mix","Annual rebalance; avoid endless expansion","Study fundamentals: cash flow, moats, compounding"]},
-    Fire:{p:"Aggressive / momentum",tips:["Define max position & stop-loss in writing","Diversify; avoid all-in","Review after trades; no emotion adds"]},
-    Earth:{p:"Steady / cash-flow",tips:["Fund emergency savings first","Automate DCA for the long term","Audit insurance/liabilities yearly"]},
-    Metal:{p:"Rules-based / quant",tips:["Invest by rules table (rebalance/valuation)","Avoid over-fitting; favor robustness","Keep an investment log; check discipline"]},
-    Water:{p:"Flexible / hedged",tips:["Curate info across markets/strategies","Set an information diet","Build a budget & cash-flow sheet"]}
-  };
-
-  function topKey(c){return Object.entries(c).sort((a,b)=>b[1]-a[1])[0][0]}
-  function lowKey(c){return Object.entries(c).sort((a,b)=>b[1]-a[1]).slice(-1)[0][0]}
-
-  window.buildAdviceHTML = function(counts){
-    const most=topKey(counts), least=lowKey(counts);
-    const healthHdr=`Focus system: ${most} (${ORG[most].en}); balance with ${KE[most]} (brake) and ${GEN[most]} (vent)`;
-    function group(title, arr){ return `<li><b>${title}</b><ul class="bullets">${arr.map(t=>`<li>${t}</li>`).join('')}</ul></li>`; }
-    const L=LOVE[most], w=WEALTH[most];
-    const html = [
-      group("Health", [healthHdr, ...ORG[most].tips]),
-      group("Love",   [`Your dominant vibe: ${most} (${L.traits.join(' / ')})`,`What to complement: ${least}`,...L.dos.map(x=>'✔ '+x),...L.donts.map(x=>'✘ '+x)]),
-      group("Career", [`Work style: led by ${most}; watch the ${least} dimension`, ...CAREER[most]]),
-      group("Wealth", [`Money profile: ${w.p} (lead: ${most}; add: ${least})`, ...w.tips])
-    ].join('');
-    return html;
-  };
-
-  window.saveAdvice = function(counts){
-    try{
-      const html = window.buildAdviceHTML(counts);
-      localStorage.setItem('ff_advice_html', html);
-    }catch(e){ console.error('[FF] saveAdvice error', e); }
-  };
-})();
-</script>
-
 </body></html>
