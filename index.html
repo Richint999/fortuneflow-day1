@@ -1,7 +1,5 @@
 <!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>FortuneFlow — BaZi & Five Elements</title><link rel="stylesheet" href="styles.css">
-<script src="/assets/js/geo.js?v=20250811" defer></script>
-</head><body><div class="topbar no-print">
+<title>FortuneFlow — BaZi & Five Elements</title><link rel="stylesheet" href="styles.css"></head><body><div class="topbar no-print">
   <div class="container row">
     <div class="brand">FortuneFlow</div>
     <nav>
@@ -59,6 +57,7 @@
   </section>
 </div>
 <script>
+const COUNTRY_TIME=[["China (+08:00)",480,480,false,"N"],["USA - Los Angeles (-480/-420)",-480,-420,true,"N"],["USA - New York (-300/-240)",-300,-240,true,"N"],["Canada - Toronto (-300/-240)",-300,-240,true,"N"],["Hong Kong (+08:00)",480,480,false,"N"],["Taiwan (+08:00)",480,480,false,"N"],["Japan (+09:00)",540,540,false,"N"],["South Korea (+09:00)",540,540,false,"N"],["Mexico City (-360)",-360,-360,false,"N"],["Spain (+60/+120)",60,120,true,"N"],["United Kingdom (0/+60)",0,60,true,"N"],["Germany (+60/+120)",60,120,true,"N"],["France (+60/+120)",60,120,true,"N"],["Italy (+60/+120)",60,120,true,"N"],["Netherlands (+60/+120)",60,120,true,"N"],["Greece (+120/+180)",120,180,true,"N"],["UAE (+240)",240,240,false,"N"],["Australia - Sydney (+10/+11)",600,660,true,"S"],["New Zealand - Wellington (+12/+13)",720,780,true,"S"]];
 function populateCountry(){ const el=document.getElementById('ff-country'); el.innerHTML=''; COUNTRY_TIME.forEach((r,i)=>{const o=document.createElement('option'); o.value=i; o.textContent=r[0]; el.appendChild(o);}); if(el.options.length>0) el.selectedIndex=0; }
 function inferOffset(idx, dateStr){ const r=COUNTRY_TIME[idx]; if(!r) return 0; const std=r[1], dst=r[2], has=r[3], hem=r[4]; if(!has || !dateStr){ return std; } const a=dateStr.split('-'); const m=parseInt(a[1]||'1',10), d=parseInt(a[2]||'1',10); const mmdd=m*100+d; if(hem==='N'){ return (mmdd>=401 && mmdd<=1031) ? dst : std; } else { return ((mmdd>=1101&&mmdd<=1231)||(mmdd>=101&&mmdd<=331))?dst:std; } }
 const STEMS_ZH=["甲","乙","丙","丁","戊","己","庚","辛","壬","癸"]; const BRANCHES_ZH=["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];

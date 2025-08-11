@@ -19,6 +19,8 @@
     .small{font-size:13px;color:#a7b3c9}
     .err{color:#b91c1c;background:#3d1212;border:1px solid #5f1b1b;padding:8px;border-radius:10px;margin-bottom:10px;display:none}
   </style>
+
+<script src="/assets/js/countries.js?v=20250811" defer></script>
 </head>
 <body>
   <div class="topbar">
@@ -130,27 +132,6 @@
     });
   </script>
 
-<script src="/assets/js/geo.js?v=20250811" defer></script>
-
 <script>document.addEventListener('DOMContentLoaded',function(){ window.__FF_COUNTRY__ && __FF_COUNTRY__.populateCountrySelect('a-country'); window.__FF_COUNTRY__ && __FF_COUNTRY__.populateCountrySelect('b-country'); });</script>
-
-<script>
-document.addEventListener('DOMContentLoaded', function(){
-  if(!window.COUNTRY_TIME || !window.__FF_COUNTRY__){
-    console.warn('[FF] geo.js not loaded; using fallback.');
-    var opts = ["USA - New York (-300/-240)","USA - Los Angeles (-480/-420)","United Kingdom (+00/+60)","China (+08:00)","Australia - Sydney (+10/+11)"];
-    function fill(id){
-      var el=document.getElementById(id); if(!el) return;
-      el.innerHTML = opts.map(function(x){ return '<option>'+x+'</option>'; }).join('');
-    }
-    ['a-country','b-country','country'].forEach(fill);
-  }else{
-    // Populate from shared module
-    ['a-country','b-country','country'].forEach(function(id){
-      if(document.getElementById(id)) __FF_COUNTRY__.populateCountrySelect(id);
-    });
-  }
-});
-</script>
 
 </body></html>
