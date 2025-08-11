@@ -1,4 +1,28 @@
 var __tst_enabled = false;
+// -- helper: parse utc offset to minutes --
+function parseOffsetMinutes(raw){
+  if (raw == null) return 0;
+  const s = String(raw).trim();
+  if (s === "") return 0;
+
+  // 形如 "+08:00" / "-07:30" / "+8:00"
+  const m = s.match(/^([+-]?)(\d{1,2})(?::?(\d{2}))?$/);
+  if (m){
+    const sign = m[1] === "-" ? -1 : 1;
+    const hh = parseInt(m[2]||"0",10);
+    const mm = parseInt(m[3]||"0",10);
+    // 当作小时:分钟
+    if (hh <= 24) return sign * (hh*60 + mm);
+  }
+
+  // 纯数字：|n|<=24 当作“小时”，否则当作“分钟”
+  const n = Number(s);
+  if (!isNaN(n)){
+    if (Math.abs(n) <= 24) return Math.round(n*60);
+    return Math.round(n);
+  }
+  return 0; // 容错
+}
 function autoFourPillarsFromInput(dateStr, timeStr, utcOffsetMinutesRaw){
   if(!dateStr) throw new Error("Missing date");
   const [y,m,d] = dateStr.split("-").map(x=>parseInt(x,10));
