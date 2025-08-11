@@ -1,4 +1,4 @@
-
+var __tst_enabled = false;
 // Day-2 BaZi auto calculation (approximate): date, time, UTC offset -> Year/Month/Day/Hour pillars
 // Notes: Uses LiChun ~ Feb 4 boundary for Year/Month, JDN-derived cyclical day, local hour slots for Hour pillar.
 // This is sufficient for MVP; Day-3 can add precise solar terms and geolocation-based true solar time.
