@@ -46,3 +46,7 @@ input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 
 .cta .cta-row{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
 .cta .cta-btn{white-space:nowrap}
 @media (max-width:640px){ .cta .cta-row{align-items:flex-start} }
+           .cta .cta-row{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.cta .cta-btn{white-space:nowrap}
+@media (max-width:640px){ .cta .cta-row{align-items:flex-start} }
+
