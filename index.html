@@ -18,6 +18,18 @@
   <section class="card">
     <h2>Auto Four Pillars</h2>
 
+<!-- Country + Timezone (Professional) -->
+<div id="ff-ctz" style="margin:.5rem 0 1rem; padding:.5rem; border:1px dashed #e2e2e2; border-radius:8px;">
+  <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+    <label for="ff-country-country" style="min-width:70px;">Country</label>
+    <select id="ff-country-country" style="min-width:220px;"></select>
+    <label for="ff-country-zone" style="margin-left:10px; min-width:80px;">Time&nbsp;zone</label>
+    <select id="ff-country-zone" style="min-width:260px;"></select>
+    <span id="ff-ctz-note" style="font-size:12px;color:#666;">Tip: select country first, then pick a timezone/city.</span>
+  </div>
+</div>
+
+
 <!-- Location Mode Toggle -->
 <div id="ff-locmode" style="margin:.5rem 0 1rem; padding:.5rem; border:1px dashed #e2e2e2; border-radius:8px;">
   <label style="margin-right:12px;"><input type="radio" name="locmode" value="advanced" checked> Advanced (City/Timezone)</label>
@@ -179,4 +191,111 @@ document.addEventListener('DOMContentLoaded',function(){ ['year','month','day','
 })();
 </script>
 
+
+<script>
+(function(){
+  function hideOriginalCountry(){
+    const sel = document.getElementById('ff-country');
+    if(!sel) return null;
+    let n = sel; while(n && n.parentElement){
+      if(/row|section|div/i.test(n.tagName) || (n.className||'').match(/row|field|group/)){ n.style.display='none'; break; }
+      n = n.parentElement;
+    }
+    return sel;
+  }
+  function parseCountryLabel(label){
+    const hy = label.indexOf(' - ');
+    if(hy>0) return label.slice(0, hy).trim();
+    return label.replace(/\s*\(.+?\)\s*$/, '').trim();
+  }
+  function buildGroupedFromCOUNTRY_TIME(){
+    if(!window.COUNTRY_TIME) return {};
+    const grouped = {};
+    window.COUNTRY_TIME.forEach((r, idx)=>{
+      const label = r[0];
+      const country = parseCountryLabel(label);
+      (grouped[country] ||= []).push({label, idx});
+    });
+    Object.values(grouped).forEach(list=>list.sort((a,b)=>a.label.localeCompare(b.label)));
+    return grouped;
+  }
+  function tokensForCountry(name){
+    const A = {
+      "United States":["USA","United States","US","America"],
+      "United Kingdom":["UK","United Kingdom","Britain","England","Scotland","Wales","Northern Ireland","Great Britain"],
+      "Russia":["Russia","Russian Federation","Moscow"],
+      "Myanmar (Burma)":["Myanmar","Burma"],
+      "Czechia (Czech Republic)":["Czechia","Czech Republic"],
+      "Côte d’Ivoire":["Côte d’Ivoire","Cote d'Ivoire","Ivory Coast"],
+      "Democratic Republic of the Congo":["Democratic Republic of the Congo","DR Congo","Congo - Kinshasa"],
+      "Congo (Congo-Brazzaville)":["Congo","Congo - Brazzaville"],
+      "South Korea":["Korea - Seoul","South Korea","Korea"],
+      "North Korea":["North Korea","DPRK"],
+      "United Arab Emirates":["UAE","United Arab Emirates"],
+      "Hong Kong":["Hong Kong"],
+      "Macao":["Macao","Macau"],
+      "Taiwan":["Taiwan"],
+      "Türkiye":["Turkey","Türkiye"],
+      "Eswatini":["Eswatini","Swaziland"]
+    };
+    return A[name] || [name];
+  }
+  function populateCountrySelect(countrySel, grouped){
+    const names = Array.isArray(window.FF_COUNTRIES) && window.FF_COUNTRIES.length>0
+      ? window.FF_COUNTRIES.slice()
+      : Object.keys(grouped);
+    countrySel.innerHTML='';
+    names.forEach(n=>{
+      const o=document.createElement('option'); o.value=n; o.textContent=n; countrySel.appendChild(o);
+    });
+    const saved = localStorage.getItem('ff_country_basic') || 'China';
+    if([].some.call(countrySel.options,opt=>opt.value===saved)) countrySel.value = saved;
+  }
+  function populateZoneSelect(zoneSel, countryName, grouped, hiddenOriginal){
+    const tokens = tokensForCountry(countryName).map(s=>s.toLowerCase());
+    let matches = [];
+    Object.entries(grouped).forEach(([key, list])=>{
+      const low = key.toLowerCase();
+      if(tokens.some(t=>low.includes(t))) matches = matches.concat(list);
+    });
+    if(matches.length===0){
+      const all = [];
+      Object.values(grouped).forEach(list=> list.forEach(x=>all.push(x)));
+      matches = all.filter(x=> tokens.some(t=> x.label.toLowerCase().includes(t)));
+    }
+    if(matches.length===0){
+      Object.values(grouped).forEach(list=> list.forEach(x=>matches.push(x)));
+    }
+    zoneSel.innerHTML='';
+    matches.forEach(x=>{
+      const o=document.createElement('option');
+      o.value = String(x.idx);
+      o.textContent = x.label;
+      zoneSel.appendChild(o);
+    });
+    const prefer = matches.find(x=> /Beijing|Sydney|Toronto|New York|Los Angeles|London|Paris|Berlin|Tokyo|Seoul|Singapore|Moscow/i.test(x.label)) || matches[0];
+    if(prefer) zoneSel.value = String(prefer.idx);
+    if(hiddenOriginal){
+      hiddenOriginal.selectedIndex = parseInt(zoneSel.value,10) || 0;
+    }
+  }
+  document.addEventListener('DOMContentLoaded', function(){
+    const hiddenOriginal = hideOriginalCountry();
+    const countrySel = document.getElementById('ff-country-country');
+    const zoneSel = document.getElementById('ff-country-zone');
+    if(!countrySel || !zoneSel) return;
+    const grouped = buildGroupedFromCOUNTRY_TIME();
+    function sync(){ 
+      populateZoneSelect(zoneSel, countrySel.value, grouped, hiddenOriginal); 
+      localStorage.setItem('ff_country_basic', countrySel.value);
+    }
+    // Populate country once FF_COUNTRIES ready (defer to next tick in case countries.min.js is deferred)
+    setTimeout(function(){ populateCountrySelect(countrySel, grouped); sync(); }, 50);
+    countrySel.addEventListener('change', sync);
+    zoneSel.addEventListener('change', function(){
+      if(hiddenOriginal) hiddenOriginal.selectedIndex = parseInt(zoneSel.value,10) || 0;
+    });
+  });
+})();
+</script>
 </body></html>
