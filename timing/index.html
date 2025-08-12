@@ -379,5 +379,55 @@
     });
   });
   </script>
+  <script>
+/* Prioritize popular countries at the top (without losing the 200+ full list) */
+(function(){
+  // 精确写“选项文字”，和下拉里的文本一致
+  const POPULAR = [
+    "China",
+    "USA - New York (-300/-240)", "USA - Los Angeles (-480/-420)",
+    "United Kingdom",
+    "Hong Kong", "Taiwan", "Singapore",
+    "Japan", "South Korea",
+    "Canada - Toronto (-300/-240)", "Canada - Vancouver (-480/-420)",
+    "Australia - Sydney (+10:00/+11:00)",
+    "India", "Germany", "France", "Italy", "Spain"
+  ];
+
+  function prioritize(select){
+    if(!select) return;
+    const all = Array.from(select.options);
+    // 构建 Popular 分组
+    const popularGroup = document.createElement('optgroup');
+    popularGroup.label = "— Popular —";
+    const seen = new Set();
+
+    POPULAR.forEach(txt => {
+      const opt = all.find(o => o.text.trim() === txt);
+      if (opt && !seen.has(txt)) {
+        popularGroup.appendChild(opt.cloneNode(true));
+        seen.add(txt);
+      }
+    });
+
+    // 其余保持原有顺序，去重
+    const restFrag = document.createDocumentFragment();
+    all.forEach(o => { if (!seen.has(o.text.trim())) restFrag.appendChild(o.cloneNode(true)); });
+
+    // 重建
+    select.innerHTML = "";
+    if (popularGroup.children.length) select.appendChild(popularGroup);
+    select.appendChild(restFrag);
+
+    // 可选：默认选中 China（或注释掉保持原默认）
+    // if (!select.value && POPULAR[0]) select.value = POPULAR[0];
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    ["ff-country","a-country","b-country","country"].forEach(id => prioritize(document.getElementById(id)));
+  });
+})();
+</script>
+
 </body>
 </html>
